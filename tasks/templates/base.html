@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Talento Humano</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <nav class="mb-4">
+            <a class="btn btn-outline-primary" href="{% url 'menu_inicio' %}">Menú Principal</a>
+            <a class="btn btn-outline-secondary" href="{% url 'lista_funcionarios' %}">Funcionarios</a>
+            <a class="btn btn-outline-secondary" href="{% url 'lista_tipos_documento' %}">Tipos de Documento</a>
+            <a class="btn btn-outline-secondary" href="{% url 'lista_documentos_funcionario' %}">Documentos</a>
+        </nav>
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>
