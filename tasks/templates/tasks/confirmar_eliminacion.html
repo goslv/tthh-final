@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Eliminar Funcionario</title>
+</head>
+<body>
+    <h1>¿Seguro que deseas eliminar a {{ funcionario.nombre }} {{ funcionario.apellido }}?</h1>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Sí, eliminar</button>
+    </form>
+    <a href="{% url 'lista_funcionarios' %}">Cancelar</a>
+</body>
+</html>

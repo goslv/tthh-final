@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Documentos por Funcionario</h2>
+    <a href="{% url 'crear_documento' %}" class="btn btn-primary mb-3">Nuevo Documento</a>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Funcionario</th>
+                <th>Tipo de Documento</th>
+                <th>Fecha</th>
+                <th>Archivo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documentos %}
+            <tr>
+                <td>{{ doc.id_funcionario }}</td>
+                <td>{{ doc.id_tipo_documento }}</td>
+                <td>{{ doc.fecha_presentacion }}</td>
+                <td>
+                    {% if doc.archivo %}
+                        <a href="{{ doc.archivo.url }}" target="_blank">Ver archivo</a>
+                    {% else %}
+                        No disponible
+                    {% endif %}
+                </td>
+                <td>{{ doc.estado }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
