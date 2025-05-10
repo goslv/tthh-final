@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import PerfilFuncionario
 from django.contrib import messages
 from .models import TipoDocumento, DocumentoFuncionario
@@ -11,7 +12,41 @@ def menu_inicio(request):
 
 def lista_funcionarios(request):
     funcionarios = PerfilFuncionario.objects.all()
+    departamentos = PerfilFuncionario.objects.values_list('departamento', flat=True).distinct()
+    context = {
+        'funcionarios': funcionarios,
+        'departamentos': departamentos,
+    }
     return render(request, 'tasks/lista_funcionarios.html', {'funcionarios': funcionarios})
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)  # Solo administradores
+def editar_funcionario(request, id_funcionario):
+    funcionario = get_object_or_404(PerfilFuncionario, id_funcionario=id_funcionario)
+    
+    if request.method == 'POST':
+        form = actualizar_funcionario(request.POST, request.FILES, instance=funcionario)
+        if form.is_valid():
+            form.save()
+            return redirect('lista_funcionarios')
+    else:
+        form = actualizar_funcionario(instance=funcionario)
+    
+    context = {
+        'form': form,
+        'funcionario': funcionario
+    }
+    return render(request, 'editar_funcionario.html', context)
+    
+#Editar si es admin
+@login_required
+@user_passes_test(lambda u: u.is_staff)  # Solo administradores
+def eliminar_funcionario(request, id_funcionario):
+    funcionario = get_object_or_404(PerfilFuncionario, id_funcionario=id_funcionario)
+    funcionario.delete()
+    return redirect('lista_funcionarios')
+
+
 
 def crear_funcionario(request):
     if request.method == 'POST':
