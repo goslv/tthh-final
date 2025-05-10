@@ -1,115 +1,184 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Actualizar Funcionario</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-</head>
-<body class="bg-light">
-
-<div class="container mt-5">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white">
-            <h4><i class="bi bi-pencil-square"></i> Actualizar Funcionario</h4>
-        </div>
-        <div class="card-body">
-
-            <form method="post" action="">
-                {% csrf_token %}
-
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-person-fill"></i> Nombre</label>
-                        <input type="text" name="nombre" value="{{ funcionario.nombre }}" class="form-control" required>
+{% block title %}Editar Funcionario{% endblock %}
+{% block titulo_pagina %}
+<i class="bi-person-lines-fill text-primary"></i> Editar Funcionario
+{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Formulario de Edición</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-12 text-center mb-3">
+                            <div class="image-upload-container">
+                                {% if funcionario.foto %}
+                                    <img id="preview-image" src="{{ funcionario.foto.url }}" class="rounded-circle" style="height: 150px; width: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img id="preview-image" src="{% static 'img/user-default.png' %}" class="rounded-circle" style="height: 150px; width: 150px; object-fit: cover;">
+                                {% endif %}
+                                <div class="mt-2">
+                                    <label for="{{ form.foto.id_for_label }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-camera"></i> Cambiar foto
+                                    </label>
+                                    {{ form.foto }}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-person-fill"></i> Apellido</label>
-                        <input type="text" name="apellido" value="{{ funcionario.apellido }}" class="form-control" required>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.nombre }}
+                                <label for="{{ form.nombre.id_for_label }}">Nombre</label>
+                                {% if form.nombre.errors %}
+                                <div class="invalid-feedback d-block">{{ form.nombre.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.apellido }}
+                                <label for="{{ form.apellido.id_for_label }}">Apellido</label>
+                                {% if form.apellido.errors %}
+                                <div class="invalid-feedback d-block">{{ form.apellido.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-credit-card-2-front-fill"></i> Cédula</label>
-                        <input type="text" name="cedula" value="{{ funcionario.cedula }}" class="form-control" required>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.cedula }}
+                                <label for="{{ form.cedula.id_for_label }}">Cédula</label>
+                                {% if form.cedula.errors %}
+                                <div class="invalid-feedback d-block">{{ form.cedula.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.cargo }}
+                                <label for="{{ form.cargo.id_for_label }}">Cargo</label>
+                                {% if form.cargo.errors %}
+                                <div class="invalid-feedback d-block">{{ form.cargo.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-briefcase-fill"></i> Cargo</label>
-                        <select name="cargo" id="cargo" class="form-select" required onchange="mostrarOtroCargo()">
-                            <option value="">Seleccione un cargo</option>
-                            <option value="Cajero" {% if funcionario.cargo == "Cajero" %}selected{% endif %}>Cajero</option>
-                            <option value="Secretario" {% if funcionario.cargo == "Secretario" %}selected{% endif %}>Secretario</option>
-                            <option value="Director de Carrera" {% if funcionario.cargo == "Director de Carrera" %}selected{% endif %}>Director de Carrera</option>
-                            <option value="Técnico" {% if funcionario.cargo == "Técnico" %}selected{% endif %}>Técnico</option>
-                            <option value="Asesor" {% if funcionario.cargo == "Asesor" %}selected{% endif %}>Asesor</option>
-                            <option value="Otro" {% if funcionario.cargo not in "Cajero Secretario Director de Carrera Técnico Asesor" %}selected{% endif %}>Otro</option>
-                        </select>
-                        <input type="text" name="otro_cargo" id="otro_cargo" class="form-control mt-2" placeholder="Especifique el cargo" style="display:none;" value="{% if funcionario.cargo not in 'Cajero Secretario Director de Carrera Técnico Asesor' %}{{ funcionario.cargo }}{% endif %}">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.departamento }}
+                                <label for="{{ form.departamento.id_for_label }}">Departamento</label>
+                                {% if form.departamento.errors %}
+                                <div class="invalid-feedback d-block">{{ form.departamento.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.fecha_ingreso }}
+                                <label for="{{ form.fecha_ingreso.id_for_label }}">Fecha de Ingreso</label>
+                                {% if form.fecha_ingreso.errors %}
+                                <div class="invalid-feedback d-block">{{ form.fecha_ingreso.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-building"></i> Departamento</label>
-                        <select name="departamento" id="departamento" class="form-select" required onchange="mostrarOtroDepartamento()">
-                            <option value="">Seleccione un departamento</option>
-                            <option value="Financiero" {% if funcionario.departamento == "Financiero" %}selected{% endif %}>Financiero</option>
-                            <option value="TIC" {% if funcionario.departamento == "TIC" %}selected{% endif %}>TIC</option>
-                            <option value="Investigacion" {% if funcionario.departamento == "Investigacion" %}selected{% endif %}>Investigacion</option>
-                            <option value="RRHH" {% if funcionario.departamento == "RRHH" %}selected{% endif %}>RRHH</option>
-                            <option value="Otro" {% if funcionario.departamento not in "Financiero TIC Investigacion RRHH" %}selected{% endif %}>Otro</option>
-                        </select>
-                        <input type="text" name="otro_departamento" id="otro_departamento" class="form-control mt-2" placeholder="Especifique el departamento" style="display:none;" value="{% if funcionario.departamento not in 'Financiero TIC Investigacion RRHH' %}{{ funcionario.departamento }}{% endif %}">
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.estado }}
+                                <label for="{{ form.estado.id_for_label }}">Estado</label>
+                                {% if form.estado.errors %}
+                                <div class="invalid-feedback d-block">{{ form.estado.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.estado_civil }}
+                                <label for="{{ form.estado_civil.id_for_label }}">Estado Civil</label>
+                                {% if form.estado_civil.errors %}
+                                <div class="invalid-feedback d-block">{{ form.estado_civil.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-calendar-event-fill"></i> Fecha de Ingreso</label>
-                        <input type="date" name="fecha_ingreso" value="{{ funcionario.fecha_ingreso|date:'Y-m-d' }}" class="form-control" required>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.direccion }}
+                                <label for="{{ form.direccion.id_for_label }}">Dirección</label>
+                                {% if form.direccion.errors %}
+                                <div class="invalid-feedback d-block">{{ form.direccion.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating mb-3">
+                                {{ form.telefono }}
+                                <label for="{{ form.telefono.id_for_label }}">Teléfono</label>
+                                {% if form.telefono.errors %}
+                                <div class="invalid-feedback d-block">{{ form.telefono.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-check-circle-fill"></i> Estado</label>
-                        <select name="estado" class="form-select" required>
-                            <option value="Activo" {% if funcionario.estado == "Activo" %}selected{% endif %}>Activo</option>
-                            <option value="Inactivo" {% if funcionario.estado == "Inactivo" %}selected{% endif %}>Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label"><i class="bi bi-heart-fill"></i> Estado Civil</label>
-                        <select name="estado_civil" class="form-select" required>
-                            <option value="Soltero" {% if funcionario.estado_civil == "Soltero" %}selected{% endif %}>Soltero</option>
-                            <option value="Casado" {% if funcionario.estado_civil == "Casado" %}selected{% endif %}>Casado</option>
-                            <option value="Divorciado" {% if funcionario.estado_civil == "Divorciado" %}selected{% endif %}>Divorciado</option>
-                            <option value="Viudo" {% if funcionario.estado_civil == "Viudo" %}selected{% endif %}>Viudo</option>
-                        </select>
-                    </div>
-
-                    <div class="d-grid gap-2 mt-4">
-                        <button type="submit" class="btn btn-success btn-lg">
-                            <i class="bi bi-save-fill"></i> Guardar Cambios
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'lista_funcionarios' %}" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Cambios
                         </button>
                     </div>
-
-                </div>
-            </form>
-
+                </form>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-function mostrarOtroCargo() {
-    var cargo = document.getElementById("cargo").value;
-    document.getElementById("otro_cargo").style.display = cargo === "Otro" ? "block" : "none";
-}
-
-function mostrarOtroDepartamento() {
-    var departamento = document.getElementById("departamento").value;
-    document.getElementById("otro_departamento").style.display = departamento === "Otro" ? "block" : "none";
-}
+document.addEventListener('DOMContentLoaded', function() {
+    // Vista previa de la imagen
+    const fileInput = document.getElementById('{{ form.foto.id_for_label }}');
+    const previewImage = document.getElementById('preview-image');
+    
+    fileInput.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Estilizar los inputs
+    fileInput.style.display = 'none';
+    
+    // Añadir clases a los inputs generados por Django
+    const formInputs = document.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        if (input.id !== '{{ form.foto.id_for_label }}') {
+            input.classList.add('form-control');
+        }
+    });
+});
 </script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+{% endblock %}

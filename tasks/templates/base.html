@@ -2,19 +2,100 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Gestión de Talento Humano</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>{% block title %}Gestión de Talento Humano{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f7fa;
+        }
+        .navbar-custom {
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.4rem;
+            color: #0d6dfdde !important;
+        }
+        .nav-link {
+            font-weight: 500;
+            color: #495057 !important;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+        }
+        .nav-link:hover {
+            background-color: #e9f2ff;
+            color: #0d6efd !important;
+        }
+        .nav-link.active {
+            background-color: #0d6efd;
+            color: #ffffff !important;
+            font-weight: 600;
+        }
+        .icon-lg {
+            font-size: 1.3rem;
+        }
+        .page-header {
+            background: #ffffff;
+            padding: 1.2rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 1rem;
+            margin-bottom: 2rem;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-4">
-        <nav class="mb-4">
-            <a class="btn btn-outline-primary" href="{% url 'menu_inicio' %}">Menú Principal</a>
-            <a class="btn btn-outline-secondary" href="{% url 'lista_funcionarios' %}">Funcionarios</a>
-            <a class="btn btn-outline-secondary" href="{% url 'lista_tipos_documento' %}">Tipos de Documento</a>
-            <a class="btn btn-outline-secondary" href="{% url 'lista_documentos_funcionario' %}">Documentos</a>
-        </nav>
+    <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'menu_inicio' %}">
+                <i class="bi bi-person-vcard icon-lg"></i> Talento Humano
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'menu_inicio' %}active{% endif %}" href="{% url 'menu_inicio' %}">
+                            <i class="bi bi-house-door icon-lg"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'lista_funcionarios' %}active{% endif %}" href="{% url 'lista_funcionarios' %}">
+                            <i class="bi bi-people icon-lg"></i> Funcionarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'lista_tipos_documento' %}active{% endif %}" href="{% url 'lista_tipos_documento' %}">
+                            <i class="bi bi-file-earmark-text icon-lg"></i> Tipos de Documento
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.resolver_match.url_name == 'lista_documentos_funcionario' %}active{% endif %}" href="{% url 'lista_documentos_funcionario' %}">
+                            <i class="bi bi-folder icon-lg"></i> Documentos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container" style="padding-top: 6rem;">
+        <div class="page-header">
+            <h2 class="mb-0">{% block titulo_pagina %}Bienvenido{% endblock %}</h2>
+        </div>
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
