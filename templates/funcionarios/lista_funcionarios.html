@@ -1,195 +1,241 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Funcionarios{% endblock %}
+
+{% block title %}Funcionarios | TH-FCYT{% endblock %}
 {% block titulo_pagina %}
-<i class="bi-people-fill text-primary"></i> Funcionarios Registrados
+<i class="fas fa-users text-gradient"></i> Funcionarios Registrados
 {% endblock %}
+
 {% block content %}
+<!-- FontAwesome -->
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 <style>
-    .card-hover:hover {
-        transform: scale(1.02);
-        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        transition: 0.3s ease-in-out;
-    }
-    .modal-blur {
-        backdrop-filter: blur(5px);
-        background-color: rgba(0, 0, 0, 0.5);
-    }
-    .view-toggle-btn.active {
-        background-color: #0d6efd;
-        color: white;
-    }
+    /* Contenedor de búsqueda / filtros / toggles */
     .search-container {
-        background-color: #00000017;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        background-color: #03030369;
+        border-radius: 0.75rem;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
     }
-    .badge-estado {
-        padding: 0.5em 0.75em;
-        font-size: 0.85em;
+
+    .search-container .form-control {
+        background: #1818182d;
+        border: none;
+        color: #e0e0e0;
     }
-    .funcionario-card {
-        height: 100%;
-        cursor: pointer;
+
+    .search-container .dropdown-toggle,
+    .search-container .view-toggle-btn {
+        border-radius: 0.5rem;
     }
-    .table-view {
-        display: none;
+
+    .view-toggle-btn.active {
+        background: #353535;
+        color: #fff;
     }
-    .card-actions {
+
+    /* Tarjetas */
+    .dashboard-card.dark {
+        background: #0c0c0cc0;
+        border-radius: 1rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        transition: transform 0.3s, box-shadow 0.3s;
+        position: relative;
+    }
+
+    .dashboard-card.dark:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+    }
+
+    .dashboard-card.dark .card-actions {
         position: absolute;
-        top: 5px;
-        right: 5px;
-        opacity: 0;
-        transition: opacity 0.3s;
+        top: 0.5rem;
+        right: 0.5rem;
+        display: flex;
+        gap: 0.25rem;
     }
-    .card:hover .card-actions {
-        opacity: 1;
+
+    .dashboard-card.dark img,
+    .dashboard-card.dark i.fs-1 {
+        width: 80px;
+        height: 80px;
+        filter: invert(1);
     }
-    .card-img-top {
-        height: 120px;
-        width: 120px;
-        margin: 15px auto 0;
-        border-radius: 50%;
-        object-fit: cover;
-        background-color: #f8f9fa;
-    }
+
+    /* Tabla */
     .table-responsive {
-        border-radius: 10px;
-        overflow: hidden;
+        background: #13131365;
+        border-radius: 1rem;
+        padding: 1rem;
+    }
+
+    .table-dark thead {
+        background: #121213bd;
+    }
+
+    .table-dark td,
+    .table-dark th {
+        color: #e0e0e0;
+    }
+
+    .table-hover tbody tr:hover {
+        background: #2c2c4a;
+    }
+
+    /* Badges */
+    .badge-estado.bg-success {
+        background: #00bcd4;
+        color: #000;
+    }
+
+    .badge-estado.bg-danger {
+        background: #f44336;
+    }
+
+    /* Animación entrada */
+    .animate-fade {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
     }
 </style>
 
-<!-- Barra de búsqueda y filtros -->
-<div class="search-container mb-4">
-    <div class="row align-items-center">
-        <div class="col-md-4">
-            <div class="input-group">
-                <span class="input-group-text bg-white border-end-0">
-                    <i class="bi bi-search"></i>
-                </span>
-                <input type="text" id="searchInput" class="form-control border-start-0" placeholder="Buscar funcionario...">
-            </div>
+<!-- BARRA DE BUSQUEDA, ORDEN, VISTA -->
+<div class="search-container d-flex flex-wrap align-items-center gap-3">
+    <div class="flex-grow-1">
+        <div class="input-group">
+            <span class="input-group-text bg-transparent border-0">
+                <i class="fas fa-search text-gradient"></i>
+            </span>
+            <input id="searchInput" type="text" class="form-control" placeholder="Buscar funcionario...">
         </div>
-        <div class="col-md-8">
-            <div class="row">
-                <div class="col-md-4">
-                    <select class="form-select" id="departamentoFilter">
-                        <option value="">Todos los departamentos</option>
-                        {% for departamento in departamentos %}
-                            <option value="{{ departamento }}">{{ departamento }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <select class="form-select" id="estadoFilter">
-                        <option value="">Todos los estados</option>
-                        <option value="Activo">Activo</option>
-                        <option value="Inactivo">Inactivo</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <div class="btn-group w-100" role="group">
-                        <button type="button" class="btn btn-outline-primary view-toggle-btn active" data-view="card"><i class="bi bi-grid-3x3-gap"></i></button>
-                        <button type="button" class="btn btn-outline-primary view-toggle-btn" data-view="table"><i class="bi bi-table"></i></button>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div>
+        <div class="btn-group">
+            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-filter me-1"></i> Ordenar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item sort-option" data-sort="nombre-asc">Nombre A → Z</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="nombre-desc">Nombre Z → A</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="cargo">Cargo</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="departamento">Departamento</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="estado">Estado</a></li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <div class="btn-group">
+            <button class="btn btn-outline-light view-toggle-btn active" data-view="card">
+                <i class="fas fa-th-large me-1"></i> Tarjetas
+            </button>
+            <button class="btn btn-outline-light view-toggle-btn" data-view="table">
+                <i class="fas fa-table me-1"></i> Tablas
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Vista de tarjetas -->
+<!-- AGREGAR -->
+<div class="mb-3">
+    <a href="{% url 'crear_funcionario' %}" class="btn btn-gradient" style="background: #000; color:#fff;">
+        <i class="fas fa-plus me-1"></i> Agregar funcionario
+    </a>
+</div>
+
+<!-- VISTA TARJETAS -->
 <div id="cardView" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-    {% for funcionario in funcionarios %}
-    <div class="col funcionario-item" 
-         data-nombre="{{ funcionario.nombre }} {{ funcionario.apellido }}" 
-         data-cedula="{{ funcionario.cedula }}"
-         data-cargo="{{ funcionario.cargo }}"
-         data-departamento="{{ funcionario.departamento }}"
-         data-estado="{{ funcionario.estado }}">
-        <div class="card shadow-sm card-hover funcionario-card" data-bs-toggle="modal" data-bs-target="#modalFuncionario{{ funcionario.id_funcionario }}">
+    {% for func in funcionarios %}
+    <div class="col funcionario-item" data-nombre="{{ func.nombre }} {{ func.apellido }}" data-cargo="{{ func.cargo }}"
+        data-departamento="{{ func.departamento }}" data-estado="{{ func.estado }}">
+        <div class="card dashboard-card dark animate-fade" data-bs-toggle="modal"
+            data-bs-target="#modalFuncionario{{ func.id_funcionario }}">
+            {% if user.is_staff %}
             <div class="card-actions">
-                {% if user.is_staff %}
-                <div class="btn-group">
-                    <a href="{% url 'editar_funcionario' funcionario.id_funcionario %}" class="btn btn-sm btn-outline-primary" onclick="event.stopPropagation()"><i class="bi bi-pencil"></i></a>
-                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="event.stopPropagation(); confirmarEliminar('{{ funcionario.id_funcionario }}')"><i class="bi bi-trash"></i></button>
-                </div>
-                {% endif %}
+                <a href="{% url 'editar_funcionario' func.id_funcionario %}" class="btn btn-sm btn-light">
+                    <i class="fas fa-edit text-dark"></i>
+                </a>
+                <button class="btn btn-sm btn-danger"
+                    onclick="event.stopPropagation(); confirmarEliminar('{{ func.id_funcionario }}')">
+                    <i class="fas fa-trash-alt text-white"></i>
+                </button>
             </div>
-            <div class="text-center">
-                {% if funcionario.foto %}
-                    <img src="{{ funcionario.foto.url }}" class="card-img-top" alt="Foto de {{ funcionario.nombre }}">
-                {% else %}
-                    <div class="card-img-top d-flex align-items-center justify-content-center">
-                        <i class="bi bi-person-circle" style="font-size: 60px; color: #007bff;"></i>
-                    </div>
-                {% endif %}
-            </div>
+            {% endif %}
             <div class="card-body text-center">
-                <h5 class="card-title">{{ funcionario.nombre }} {{ funcionario.apellido }}</h5>
-                <p class="card-text">{{ funcionario.cargo }}</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">{{ funcionario.departamento }}</small>
-                    {% if funcionario.estado == "Activo" %}
-                    <span class="badge bg-success badge-estado">Activo</span>
-                    {% else %}
-                    <span class="badge bg-danger badge-estado">Inactivo</span>
-                    {% endif %}
-                </div>
+                {% if func.foto %}
+                <img src="{{ func.foto.url }}" class="rounded-circle mb-3">
+                {% else %}
+                <i class="fas fa-user-circle text-gradient mb-3"></i>
+                {% endif %}
+                <h5 class="text-white">{{ func.nombre }} {{ func.apellido }}</h5>
+                <p class="text-secondary mb-1">{{ func.cargo }}</p>
+                <small class="text-muted">{{ func.departamento }}</small><br>
+                <span class="badge badge-estado
+  {% if func.estado == 'Activo' %}
+    bg-success
+  {% else %}
+    bg-danger
+  {% endif %}">
+                    {{ func.estado }}
+                </span>
+
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<!-- Vista de tabla -->
-<div id="tableView" class="table-view">
+<!-- VISTA TABLA -->
+<div id="tableView" class="table-view mt-4" style="display:none;">
     <div class="table-responsive">
-        <table class="table table-hover table-striped">
-            <thead class="table-light">
+        <table class="table table-hover table-dark mb-0">
+            <thead>
                 <tr>
                     <th>Nombre</th>
                     <th>Cédula</th>
                     <th>Cargo</th>
                     <th>Departamento</th>
-                    <th>Fecha Ingreso</th>
                     <th>Estado</th>
-                    {% if user.is_staff %}
-                    <th>Acciones</th>
-                    {% endif %}
+                    {% if user.is_staff %}<th>Acciones</th>{% endif %}
                 </tr>
             </thead>
             <tbody>
-                {% for funcionario in funcionarios %}
-                <tr class="funcionario-item"
-                    data-nombre="{{ funcionario.nombre }} {{ funcionario.apellido }}" 
-                    data-cedula="{{ funcionario.cedula }}"
-                    data-cargo="{{ funcionario.cargo }}"
-                    data-departamento="{{ funcionario.departamento }}"
-                    data-estado="{{ funcionario.estado }}"
-                    data-bs-toggle="modal" 
-                    data-bs-target="#modalFuncionario{{ funcionario.id_funcionario }}"
-                    style="cursor: pointer;">
-                    <td>{{ funcionario.nombre }} {{ funcionario.apellido }}</td>
-                    <td>{{ funcionario.cedula }}</td>
-                    <td>{{ funcionario.cargo }}</td>
-                    <td>{{ funcionario.departamento }}</td>
-                    <td>{{ funcionario.fecha_ingreso|date:"d/m/Y" }}</td>
+                {% for f in funcionarios %}
+                <tr class="funcionario-item" data-nombre="{{ f.nombre }} {{ f.apellido }}" data-cargo="{{ f.cargo }}"
+                    data-departamento="{{ f.departamento }}" data-estado="{{ f.estado }}" data-bs-toggle="modal"
+                    data-bs-target="#modalFuncionario{{ f.id_funcionario }}" style="cursor:pointer;">
+                    <td>{{ f.nombre }} {{ f.apellido }}</td>
+                    <td>{{ f.cedula }}</td>
+                    <td>{{ f.cargo }}</td>
+                    <td>{{ f.departamento }}</td>
                     <td>
-                        {% if funcionario.estado == "Activo" %}
-                        <span class="badge bg-success">Activo</span>
-                        {% else %}
-                        <span class="badge bg-danger">Inactivo</span>
-                        {% endif %}
+                        <span class="badge badge-estado
+    {% if f.estado == 'Activo' %}
+      bg-success
+    {% else %}
+      bg-danger
+    {% endif %}">
+                            {{ f.estado }}
+                        </span>
                     </td>
                     {% if user.is_staff %}
                     <td>
-                        <div class="btn-group btn-group-sm">
-                            <a href="{% url 'editar_funcionario' funcionario.id_funcionario %}" class="btn btn-outline-primary" onclick="event.stopPropagation()"><i class="bi bi-pencil"></i></a>
-                            <button type="button" class="btn btn-outline-danger" onclick="event.stopPropagation(); confirmarEliminar('{{ funcionario.id_funcionario }}')"><i class="bi bi-trash"></i></button>
-                        </div>
+                        <a href="{% url 'editar_funcionario' f.id_funcionario %}" class="btn btn-sm btn-light me-1">
+                            <i class="fas fa-edit text-dark"></i>
+                        </a>
+                        <button class="btn btn-sm btn-danger"
+                            onclick="event.stopPropagation(); confirmarEliminar('{{ f.id_funcionario }}')">
+                            <i class="fas fa-trash-alt text-white"></i>
+                        </button>
                     </td>
                     {% endif %}
                 </tr>
@@ -199,97 +245,19 @@
     </div>
 </div>
 
-<!-- Modales para cada funcionario -->
-{% for funcionario in funcionarios %}
-<div class="modal fade" id="modalFuncionario{{ funcionario.id_funcionario }}" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Información del Funcionario</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-md-4 text-center mb-3">
-                        {% if funcionario.foto %}
-                            <img src="{{ funcionario.foto.url }}" alt="Foto de {{ funcionario.nombre }}" class="rounded-circle img-fluid" style="max-width: 180px;">
-                        {% else %}
-                            <div class="rounded-circle mx-auto d-flex align-items-center justify-content-center" style="width: 180px; height: 180px; background-color: #f8f9fa;">
-                                <i class="bi bi-person-circle" style="font-size: 100px; color: #007bff;"></i>
-                            </div>
-                        {% endif %}
-                        <h4 class="mt-3">{{ funcionario.nombre }} {{ funcionario.apellido }}</h4>
-                        <h6 class="text-muted">{{ funcionario.cargo }}</h6>
-                        {% if funcionario.estado == "Activo" %}
-                        <span class="badge bg-success">Activo</span>
-                        {% else %}
-                        <span class="badge bg-danger">Inactivo</span>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-8">
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h6 class="mb-0">Datos personales</h6>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><i class="bi bi-person-vcard me-2"></i> Cédula:</span>
-                                    <span class="fw-bold">{{ funcionario.cedula }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><i class="bi bi-building me-2"></i> Departamento:</span>
-                                    <span class="fw-bold">{{ funcionario.departamento }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><i class="bi bi-calendar-date me-2"></i> Fecha de ingreso:</span>
-                                    <span class="fw-bold">{{ funcionario.fecha_ingreso|date:"d/m/Y" }}</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><i class="bi bi-heart me-2"></i> Estado civil:</span>
-                                    <span class="fw-bold">{{ funcionario.estado_civil }}</span>
-                                </li>
-                                {% if funcionario.direccion %}
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><i class="bi bi-geo-alt me-2"></i> Dirección:</span>
-                                    <span class="fw-bold">{{ funcionario.direccion }}</span>
-                                </li>
-                                {% endif %}
-                                {% if funcionario.telefono %}
-                                <li class="list-group-item d-flex justify-content-between">
-                                    <span><i class="bi bi-telephone me-2"></i> Teléfono:</span>
-                                    <span class="fw-bold">{{ funcionario.telefono }}</span>
-                                </li>
-                                {% endif %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                {% if user.is_staff %}
-                <a href="{% url 'editar_funcionario' funcionario.id_funcionario %}" class="btn btn-outline-primary"><i class="bi bi-pencil me-1"></i>Editar</a>
-                <button type="button" class="btn btn-outline-danger" onclick="confirmarEliminar('{{ funcionario.id_funcionario }}')"><i class="bi bi-trash me-1"></i>Eliminar</button>
-                {% endif %}
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
-{% endfor %}
-
-<!-- Modal de confirmación para eliminar -->
-<div class="modal fade" id="confirmarEliminarModal" tabindex="-1" aria-hidden="true">
+<!-- Modal Confirmar Eliminación -->
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-light">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Confirmar Eliminación</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>¿Está seguro que desea eliminar a este funcionario? Esta acción no se puede deshacer.</p>
+                <p>¿Está seguro de eliminar este funcionario?</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
                 <a href="#" id="confirmarEliminarBtn" class="btn btn-danger">Eliminar</a>
             </div>
         </div>
@@ -297,73 +265,55 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Cambio entre vistas de tarjetas y tabla
-    const viewToggleBtns = document.querySelectorAll('.view-toggle-btn');
-    const cardView = document.getElementById('cardView');
-    const tableView = document.getElementById('tableView');
-    
-    viewToggleBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            viewToggleBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            
-            const view = this.getAttribute('data-view');
-            if (view === 'card') {
-                cardView.style.display = 'flex';
-                tableView.style.display = 'none';
+    document.addEventListener('DOMContentLoaded', () => {
+        const cardView = document.getElementById('cardView'),
+            tableView = document.getElementById('tableView'),
+            toggleBtns = document.querySelectorAll('.view-toggle-btn'),
+            searchInput = document.getElementById('searchInput'),
+            items = document.querySelectorAll('.funcionario-item'),
+            sortOpts = document.querySelectorAll('.sort-option');
+
+        // Cambiar vista
+        toggleBtns.forEach(btn => btn.addEventListener('click', () => {
+            toggleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (btn.dataset.view === 'card') {
+                cardView.style.display = 'flex'; tableView.style.display = 'none';
             } else {
-                cardView.style.display = 'none';
-                tableView.style.display = 'block';
+                cardView.style.display = 'none'; tableView.style.display = 'block';
             }
+        }));
+
+        // Búsqueda
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase();
+            items.forEach(i => {
+                const name = i.dataset.nombre.toLowerCase(),
+                    cargo = i.dataset.cargo.toLowerCase();
+                i.style.display = (name.includes(term) || cargo.includes(term)) ? '' : 'none';
+            });
         });
+
+        // Ordenado
+        sortOpts.forEach(opt => opt.addEventListener('click', () => {
+            const [field, dir = 'asc'] = opt.dataset.sort.split('-');
+            const sorted = [...items].sort((a, b) => {
+                let va = a.dataset[field], vb = b.dataset[field];
+                if (va < vb) return dir === 'asc' ? -1 : 1;
+                if (va > vb) return dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+            const parent = (cardView.style.display !== 'none' ? cardView : tableView.querySelector('tbody'));
+            sorted.forEach(el => parent.appendChild(el));
+        }));
+
+        // Confirmar eliminar
+        window.confirmarEliminar = id => {
+            const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal')),
+                btn = document.getElementById('confirmarEliminarBtn');
+            btn.href = `{% url 'eliminar_funcionario' 0 %}`.replace('0', id);
+            modal.show();
+        };
     });
-    
-    // Funcionalidad de búsqueda y filtrado
-    const searchInput = document.getElementById('searchInput');
-    const departamentoFilter = document.getElementById('departamentoFilter');
-    const estadoFilter = document.getElementById('estadoFilter');
-    const funcionarioItems = document.querySelectorAll('.funcionario-item');
-    
-    function filtrarFuncionarios() {
-        const searchTerm = searchInput.value.toLowerCase();
-        const departamento = departamentoFilter.value;
-        const estado = estadoFilter.value;
-        
-        funcionarioItems.forEach(item => {
-            const nombre = item.getAttribute('data-nombre').toLowerCase();
-            const cedula = item.getAttribute('data-cedula').toLowerCase();
-            const cargo = item.getAttribute('data-cargo').toLowerCase();
-            const itemDepartamento = item.getAttribute('data-departamento');
-            const itemEstado = item.getAttribute('data-estado');
-            
-            // Aplicar filtros
-            const matchSearch = nombre.includes(searchTerm) || 
-                               cedula.includes(searchTerm) || 
-                               cargo.includes(searchTerm);
-            const matchDepartamento = departamento === '' || itemDepartamento === departamento;
-            const matchEstado = estado === '' || itemEstado === estado;
-            
-            if (matchSearch && matchDepartamento && matchEstado) {
-                item.style.display = '';
-            } else {
-                item.style.display = 'none';
-            }
-        });
-    }
-    
-    // Añadir eventos para filtrado
-    searchInput.addEventListener('input', filtrarFuncionarios);
-    departamentoFilter.addEventListener('change', filtrarFuncionarios);
-    estadoFilter.addEventListener('change', filtrarFuncionarios);
-    
-    // Funcionalidad para eliminar
-    window.confirmarEliminar = function(id) {
-        const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal'));
-        const confirmarBtn = document.getElementById('confirmarEliminarBtn');
-        confirmarBtn.href = `{% url 'eliminar_funcionario' 0 %}`.replace('0', id);
-        modal.show();
-    };
-});
 </script>
 {% endblock %}

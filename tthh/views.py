@@ -73,11 +73,17 @@ def crear_funcionario(request):
         form = PerfilFuncionarioForm(request.POST)
         if form.is_valid():
             form.save()
+            func = form.save(commit=False)
+            if request.POST.get('cargo')=='Otro':
+                func.cargo = request.POST.get('otro_cargo','Otro')
+            if request.POST.get('departamento')=='Otro':
+                func.departamento = request.POST.get('otro_departamento','Otro')
+            func.save()
             messages.success(request, "Funcionario registrado correctamente.")
             return redirect('lista_funcionarios')
-        else:
-            form = PerfilFuncionarioForm()
-        return render(request, 'funcionarios/crear_funcionario.html', {'form': form})
+    else:
+        form = PerfilFuncionarioForm()
+    return render(request, 'funcionarios/crear_funcionario.html', {'form': form})
 
 @login_required
 def editar_funcionario(request, id_funcionario):

@@ -4,123 +4,118 @@
 
 {% block content %}
 <div class="container">
-    <div class="text-center mb-5">
-        <h2 class="fw-bold text-gradient">Bienvenido, {{ request.user.get_full_name|default:request.user.username }}</h2>
-
+  <div class="text-center mb-5">
+    <h2 class="fw-bold text-gradient">Bienvenido, {{ request.user.get_full_name|default:request.user.username }}</h2>
+  </div>
+  <div class="row g-4 justify-content-center">
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <a href="{% url 'lista_funcionarios' %}" class="card-link">
+        <div class="card dashboard-card dark">
+          <div class="card-body text-center">
+            <img src="https://img.icons8.com/ios-filled/100/ffffff/user-group-man-man.png" alt="Funcionarios">
+            <h5 class="card-title fw-bold mt-3">Funcionarios</h5>
+            <p class="card-text">Gestiona la información completa del personal.</p>
+          </div>
+        </div>
+      </a>
     </div>
-    <div class="row g-4 justify-content-center">
-        <div class="col-md-5 col-lg-4 animate-fade">
-            <a href="{% url 'lista_funcionarios' %}" class="card-link">
-                <div class="card dashboard-card dark">
-                    <div class="card-body text-center">
-                        <img src="https://img.icons8.com/ios-filled/100/ffffff/user-group-man-man.png" alt="Funcionarios">
-                        <h5 class="card-title fw-bold mt-3">Funcionarios</h5>
-                        <p class="card-text">Gestiona la información completa del personal.</p>
-                    </div>
-                </div>
-            </a>
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <a href="{% url 'lista_documentos_funcionario' %}" class="card-link">
+        <div class="card dashboard-card dark">
+          <div class="card-body text-center">
+            <img src="https://img.icons8.com/ios-filled/100/ffffff/documents.png" alt="Documentos">
+            <h5 class="card-title fw-bold mt-3">Documentos</h5>
+            <p class="card-text">Controla toda la documentación del personal.</p>
+          </div>
         </div>
-        <div class="col-md-5 col-lg-4 animate-fade">
-            <a href="{% url 'lista_documentos_funcionario' %}" class="card-link">
-                <div class="card dashboard-card dark">
-                    <div class="card-body text-center">
-                        <img src="https://img.icons8.com/ios-filled/100/ffffff/documents.png" alt="Documentos">
-                        <h5 class="card-title fw-bold mt-3">Documentos</h5>
-                        <p class="card-text">Controla toda la documentación del personal.</p>
-                    </div>
-                </div>
-            </a>
-        </div>
-        <div class="col-md-5 col-lg-4 animate-fade">
-            <div class="card dashboard-card dark">
-                <div class="card-body text-center">
-                    <img src="https://img.icons8.com/ios-filled/100/ffffff/graph-report.png" alt="Evaluaciones">
-                    <h5 class="card-title fw-bold mt-3">Evaluaciones</h5>
-                    <p class="card-text">Gestión de evaluaciones del personal.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5 col-lg-4 animate-fade">
-            <div class="card dashboard-card dark">
-                <div class="card-body text-center">
-                    <img src="https://img.icons8.com/ios-filled/100/ffffff/planner.png" alt="Eventos">
-                    <h5 class="card-title fw-bold mt-3">Eventos Laborales</h5>
-                    <p class="card-text">Registros de traslados, vacaciones, sanciones.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5 col-lg-4 animate-fade">
-            <div class="card dashboard-card dark">
-                <div class="card-body text-center">
-                    <img src="https://img.icons8.com/ios-filled/100/ffffff/gift--v1.png" alt="Beneficios">
-                    <h5 class="card-title fw-bold mt-3">Beneficios</h5>
-                    <p class="card-text">Subsidios, becas y apoyo institucional.</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5 col-lg-4 animate-fade">
-            <div class="card dashboard-card dark">
-                <div class="card-body text-center">
-                    <img src="https://img.icons8.com/ios-filled/100/ffffff/user.png" alt="Usuarios">
-                    <h5 class="card-title fw-bold mt-3">Usuarios</h5>
-                    <p class="card-text">Administración de cuentas y roles del sistema.</p>
-                </div>
-            </div>
-        </div>
+      </a>
     </div>
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <div class="card dashboard-card dark">
+        <div class="card-body text-center">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/graph-report.png" alt="Evaluaciones">
+          <h5 class="card-title fw-bold mt-3">Evaluaciones</h5>
+          <p class="card-text">Gestión de evaluaciones del personal.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <div class="card dashboard-card dark">
+        <div class="card-body text-center">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/planner.png" alt="Eventos">
+          <h5 class="card-title fw-bold mt-3">Eventos Laborales</h5>
+          <p class="card-text">Registros de traslados, vacaciones, sanciones.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <div class="card dashboard-card dark">
+        <div class="card-body text-center">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/gift--v1.png" alt="Beneficios">
+          <h5 class="card-title fw-bold mt-3">Beneficios</h5>
+          <p class="card-text">Subsidios, becas y apoyo institucional.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <div class="card dashboard-card dark">
+        <div class="card-body text-center">
+          <img src="https://img.icons8.com/ios-filled/100/ffffff/user.png" alt="Usuarios">
+          <h5 class="card-title fw-bold mt-3">Usuarios</h5>
+          <p class="card-text">Administración de cuentas y roles del sistema.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <style>
-.text-gradient {
-    background: linear-gradient(to right, #ffffff, #b3b1b1d8);
-    background-clip: text;
+  .text-gradient {
+    background: linear-gradient(to right, #ffffff, #fdfdfd71);
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif ;
-}
-.card-link {
+    font-family: 'Trebuchet MS', sans-serif;
+  }
+  .card-link {
     text-decoration: none;
     color: inherit;
-}
-.dashboard-card.dark {
-    background: #00000081;
+  }
+  .dashboard-card.dark {
+    background: #1a1a2e00;
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    transition: all 0.4s ease-in-out;
+    box-shadow: 0 8px 20px rgba(0, 0, 0 , 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 0.6s forwards;
-    border: 1px solid #ffffff17;
-}
-.dashboard-card img {
+    border: 1px solid rgba(69, 123, 157, 0.178); /* borde en tono acentuado */
+  }
+  .dashboard-card.dark:hover {
+    transform: translateY(0) scale(1.05);
+    box-shadow: 0 35px 35px rgba(255, 255, 255, 0.103);
+    scale: 1.02;
+  }
+  .dashboard-card.dark img {
     width: 80px;
     height: 80px;
-}
-
-.dashboard-card h5 {
+  }
+  .dashboard-card.dark h5 {
     font-size: 1.5rem;
-    color: #ffffff;
-    font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-}
-.dashboard-card p {
+    color: #fff;
+    font-family: 'Franklin Gothic Medium', sans-serif;
+  }
+  .dashboard-card.dark p {
     font-size: 1rem;
-    color: #ffffff;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif ;
-}
-.dashboard-card:hover {
-    scale: 1.04;
-    transform: translateY(0);
-    box-shadow: 0 15px 35px rgba(252, 252, 252, 0.027);
-}
-.animate-fade {
-    animation: fadeInUp 0.8s ease forwards;
-}
-@keyframes fadeInUp {
+    color: #ccc;
+    font-family: 'Lucida Sans', sans-serif;
+  }
+  @keyframes fadeInUp {
     to {
-        opacity: 1;
-        transform: translateY(0);
+      opacity: 1;
+      transform: translateY(0);
     }
-}
+  }
 </style>
 {% endblock %}
