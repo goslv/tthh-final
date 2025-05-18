@@ -40,15 +40,19 @@
       </div>
     </div>
     <div class="col-md-5 col-lg-4 animate-fade">
-      <div class="card dashboard-card dark">
-        <div class="card-body text-center">
-          <img src="https://img.icons8.com/ios-filled/100/ffffff/planner.png" alt="Eventos">
-          <h5 class="card-title fw-bold mt-3">Eventos Laborales</h5>
-          <p class="card-text">Registros de traslados, vacaciones, sanciones.</p>
+    <a href="{% url 'lista_eventos' %}" class="text-decoration-none">
+    <div class="card dashboard-card dark">
+      <div class="card-body text-center">
+        <img src="https://img.icons8.com/ios-filled/100/ffffff/planner.png" alt="Eventos">
+        <h5 class="card-title fw-bold mt-3 text-white">Eventos Laborales</h5>
+        <p class="card-text text-white">Registros de traslados, vacaciones, sanciones.</p>
         </div>
       </div>
-    </div>
+    </a>
+  </div>
+
     <div class="col-md-5 col-lg-4 animate-fade">
+    <a href="{% url 'lista_beneficios' %}" class="text-decoration-none">
       <div class="card dashboard-card dark">
         <div class="card-body text-center">
           <img src="https://img.icons8.com/ios-filled/100/ffffff/gift--v1.png" alt="Beneficios">
@@ -56,6 +60,7 @@
           <p class="card-text">Subsidios, becas y apoyo institucional.</p>
         </div>
       </div>
+    </a>
     </div>
     <div class="col-md-5 col-lg-4 animate-fade">
       <div class="card dashboard-card dark">

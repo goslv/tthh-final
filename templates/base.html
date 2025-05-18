@@ -72,6 +72,20 @@
     </style>
 </head>
 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    $('.select2').select2({
+      placeholder: "Buscar funcionario...",
+      width: '100%'
+    });
+  });
+</script>
+
 <body>
     {% if request.user.is_authenticated %}
     <div class="sidebar">
@@ -80,8 +94,8 @@
         <a href="{% url 'lista_funcionarios' %}"><i class="fas fa-user-friends"></i> Funcionarios</a>
         <a href="{% url 'lista_documentos' %}"><i class="fas fa-file-alt"></i> Documentos</a>
         <a href="#"><i class="fas fa-chart-line"></i> Evaluaciones</a>
-        <a href="#"><i class="fas fa-calendar-alt"></i> Eventos</a>
-        <a href="#"><i class="fas fa-gift"></i> Beneficios</a>
+        <a href="{% url 'lista_eventos' %}"><i class="fas fa-calendar-alt"></i> Eventos</a>
+        <a href="{% url 'lista_beneficios'%}"><i class="fas fa-gift"></i> Beneficios</a>
         <a href="#"><i class="fas fa-user-cog"></i> Usuarios</a>
         <a href="{% url 'logout' %}" class="mt-auto"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</a>
     </div>

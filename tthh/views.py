@@ -11,6 +11,8 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
+from .models import PerfilFuncionario
+
 
 def test_template(request):
     return render(request, 'auth/login.html')  # prueba directa
@@ -216,14 +218,18 @@ def lista_beneficios(request):
 
 def crear_beneficio(request):
     if request.method == 'POST':
-        form = BeneficioFuncionarioForm(request.POST)
+        form = BeneficioFuncionarioForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Beneficio registrado correctamente.")
             return redirect('lista_beneficios')
-        else:
-            form = BeneficioFuncionarioForm()
-        return render(request, 'beneficios/crear_beneficio.html', {'form': form})
+    else:
+        form = BeneficioFuncionarioForm()
+
+    funcionarios = PerfilFuncionario.objects.all()
+    return render(request, 'beneficios/crear_beneficio.html', {'form': form, 'funcionarios': funcionarios})
+
+
     
 def editar_beneficio(request, id_beneficio):
     beneficio = get_object_or_404(BeneficioFuncionario, pk=id_beneficio)
@@ -244,21 +250,24 @@ def eliminar_beneficio(request, id_beneficio):
     return redirect('lista_beneficios')
 
 # ------------------------ EVENTOS FUNCIONARIOS ------------------------
-
-def lista_eventos_funcionario(request):
+def lista_eventos(request):
     eventos = EventoLaboral.objects.select_related('id_funcionario').all()
     return render(request, 'eventos/lista_eventos_funcionario.html', {'eventos': eventos})
 
-def registrar_evento_funcionario(request):
+def crear_evento(request):
     if request.method == 'POST':
-        form = EventoLaboralForm(request.POST)
+        form = EventoLaboralForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             messages.success(request, "Evento registrado exitosamente.")
-            return redirect('lista_eventos_funcionario')
-        else:
-            form = EventoLaboralForm()
-    return render(request, 'eventos/crear_evento.html', {'form': form})
+            return redirect('lista_eventos')
+    else:
+        form = EventoLaboralForm()
+
+    funcionarios = PerfilFuncionario.objects.all()
+    return render(request, 'eventos/crear_evento.html', {'form': form, 'funcionarios': funcionarios})
+
+
 
 def editar_evento(request, id_evento):
     evento = get_object_or_404(EventoLaboral, pk=id_evento)
@@ -268,15 +277,20 @@ def editar_evento(request, id_evento):
             form.save()
             messages.success(request, "Evento actualizado correctamente.")
             return redirect('lista_eventos_funcionario')
-        else:
-            form = EventoLaboralForm(instance=evento)
-        return render(request, 'eventos/editar_evento.html', {'form': form})
+    else:
+        form = EventoLaboralForm(instance=evento)
+    
+    funcionarios = PerfilFuncionario.objects.all()
+    return render(request, 'eventos/editar_evento.html', {'form': form, 'funcionarios': funcionarios})
+
     
 def eliminar_evento(request, id_evento):
     evento = get_object_or_404(EventoLaboral, pk=id_evento)
     evento.delete()
     messages.success(request, "Evento eliminado correctamente.")
-    return redirect('lista_eventos_funcionario')
+    return redirect('lista_eventos')
+
+
 
 #-------------------------- USUARIOS --------------------------
 

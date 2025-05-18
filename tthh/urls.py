@@ -38,14 +38,15 @@ urlpatterns = [
     # Beneficios
     path('beneficios/', views.lista_beneficios, name='lista_beneficios'),
     path('beneficios/crear/', views.crear_beneficio, name='crear_beneficio'),
-    path('beneficios/editar/<int:id>/', views.editar_beneficio, name='editar_beneficio'),
+    path('beneficios/editar/<int:id_beneficio>/', views.editar_beneficio, name='editar_beneficio'),
     path('beneficios/eliminar/<int:id>/', views.eliminar_beneficio, name='eliminar_beneficio'),
 
     # Eventos Laborales
-    path('eventos/', views.lista_eventos_funcionario, name='lista_eventos'),
-    path('eventos/crear/', views.registrar_evento_funcionario, name='crear_evento'),
-    path('eventos/editar/<int:id>/', views.editar_evento, name='editar_evento'),
-    path('eventos/eliminar/<int:id>/', views.eliminar_evento, name='eliminar_evento'),
+    path('eventos/', views.lista_eventos, name='lista_eventos'),
+    path('eventos/crear/', views.crear_evento, name='crear_evento'),
+    path('eventos/editar/<int:id_evento>/', views.editar_evento, name='editar_evento'),
+    path('eventos/eliminar/<int:id_evento>/', views.eliminar_evento, name='eliminar_evento'),
+
 
     # Cambiar contraseña
     path('cambiar_contrasena/', auth_views.PasswordChangeView.as_view(template_name='tasks/cambiar_contrasena.html'), name='cambiar_contrasena'),

@@ -50,7 +50,7 @@ class EventoLaboralForm(forms.ModelForm):
             'motivo': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'url_resolucion_evento': forms.TextInput(attrs={'class': 'form-control'}),
+            'url_resolucion_evento': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
 class EvaluacionForm(forms.ModelForm):
@@ -67,14 +67,16 @@ class EvaluacionForm(forms.ModelForm):
 class BeneficioFuncionarioForm(forms.ModelForm):
     class Meta:
         model = BeneficioFuncionario
-        fields = ['id_funcionario', 'tipo_beneficio', 'description', 'fecha_inicio', 'fecha_fin', 'url_archivo']
+        fields = [
+            'id_funcionario','tipo_beneficio','description','fecha_inicio','fecha_fin','url_resolucion_beneficios'  
+        ]
         widgets = {
             'id_funcionario': forms.Select(attrs={'class': 'form-control'}),
             'tipo_beneficio': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'url_archivo': forms.TextInput(attrs={'class': 'form-control'}),
+            'url_resolucion_beneficios': forms.ClearableFileInput(attrs={'class': 'form-control'}),
         }
 
 class UsuarioForm(forms.Form):
