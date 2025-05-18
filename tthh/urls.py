@@ -28,6 +28,14 @@ urlpatterns = [
     path('documentos-funcionario/', views.lista_documentos, name='lista_documentos_funcionario'),
     path('documentos-funcionario/crear/', views.crear_documento, name='crear_documento'),
     path('documentos-funcionario/editar/<int:id_documento>/', views.editar_documento, name='editar_documento'),
+    path('tipos-documento/editar/<int:pk>/', views.editar_tipo_documento, name='editar_tipo_documento'),
+    path('tipos-documento/eliminar/<int:pk>/', views.eliminar_tipo_documento, name='eliminar_tipo_documento'),
+    path('documentos/', views.lista_documentos, name='lista_documentos'),
+    path('documentos/crear/', views.crear_documento, name='crear_documento'),
+    path('documentos/editar/<int:id_documento>/', views.editar_documento, name='editar_documento'),
+    path('documentos/eliminar/<int:id_documento>/', views.eliminar_documento, name='eliminar_documento'),
+
+
 
     # Evaluaciones
     path('evaluaciones/', views.lista_evaluaciones, name='lista_evaluaciones'),

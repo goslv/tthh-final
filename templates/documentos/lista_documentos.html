@@ -1,35 +1,73 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
-<div class="container mt-4">
-    <h2>Documentos por Funcionario</h2>
-    <a href="{% url 'crear_documento' %}" class="btn btn-primary mb-3">Nuevo Documento</a>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Funcionario</th>
-                <th>Tipo de Documento</th>
-                <th>Fecha</th>
-                <th>Archivo</th>
-                <th>Estado</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for doc in documentos %}
-            <tr>
-                <td>{{ doc.id_funcionario }}</td>
-                <td>{{ doc.id_tipo_documento }}</td>
-                <td>{{ doc.fecha_presentacion }}</td>
-                <td>
-                    {% if doc.archivo %}
-                        <a href="{{ doc.archivo.url }}" target="_blank">Ver archivo</a>
-                    {% else %}
-                        No disponible
-                    {% endif %}
-                </td>
-                <td>{{ doc.estado }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 bg-dark text-white rounded-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4><i class="fas fa-folder-open me-2"></i> Documentos por Funcionario</h4>
+            <div>
+                <a href="{% url 'crear_documento' %}" class="btn btn-outline-light me-2">
+                    <i class="fas fa-plus"></i> Nuevo Documento
+                </a>
+                <a href="{% url 'lista_tipos_documento' %}" class="btn btn-outline-light">
+                    <i class="fas fa-file-alt"></i> Ir a Tipos de Documento
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtro por tipo de documento -->
+        <form method="get" class="mb-3">
+            <div class="col-md-4">
+                <select name="tipo" class="form-select" onchange="this.form.submit()">
+                    <option value="">Todos</option>
+                    {% for tipo in tipos_documento %}
+                        <option value="{{ tipo.id_tipo_documento }}" {% if tipo.id_tipo_documento|stringformat:"s" == request.GET.tipo %}selected{% endif %}>
+                            {{ tipo.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover text-white align-middle">
+                <thead class="table-light text-dark">
+                    <tr>
+                        <th>Funcionario</th>
+                        <th>Tipo de Documento</th>
+                        <th>Fecha</th>
+                        <th>Archivo</th>
+                        <th>Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for doc in documentos %}
+                        <tr>
+                            <td>{{ doc.id_funcionario }}</td>
+                            <td>{{ doc.id_tipo_documento }}</td>
+                            <td>{{ doc.fecha_presentacion }}</td>
+                            <td><a href="{{ doc.archivo.url }}" target="_blank" class="text-info">Ver archivo</a></td>
+                            <td>{{ doc.estado }}</td>
+                            <td class="text-center">
+                                <a href="{% url 'editar_documento' doc.id_documento %}" class="btn btn-sm btn-warning me-1" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a href="{% url 'eliminar_documento' doc.id_documento %}" class="btn btn-sm btn-danger" onclick="return confirm('¿Deseas eliminar este documento?');" title="Eliminar">
+                                    <i class="fas fa-trash-alt"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No hay documentos disponibles.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 {% endblock %}

@@ -113,16 +113,61 @@ def lista_documentos(request):
     documentos = DocumentoFuncionario.objects.select_related('id_funcionario', 'id_tipo_documento').all()
     return render(request, 'documentos/lista_documentos.html', {'documentos': documentos})
 
+from django.shortcuts import render
+from django.contrib import messages
+from .forms import DocumentoFuncionarioForm
+from .models import PerfilFuncionario
+
+
 def crear_documento(request):
+    mostrar_toast = False
+
     if request.method == 'POST':
         form = DocumentoFuncionarioForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            messages.success(request, "Documento registrado correctamente.")
-            return redirect('lista_documentos_funcionario')
-        else:
-            form = DocumentoFuncionarioForm()
-        return render(request, 'documentos/crear_documento.html', {'form': form})
+            cedula = form.cleaned_data['cedula']
+
+            try:
+                funcionario = PerfilFuncionario.objects.get(cedula=cedula)
+            except PerfilFuncionario.DoesNotExist:
+                messages.error(request, "Funcionario no registrado. Por favor verifique la cédula.")
+                return render(request, 'documentos/crear_documento.html', {
+                    'form': form,
+                    'mostrar_toast': False
+                })
+
+            documento = form.save(commit=False)
+            documento.id_funcionario = funcionario
+            documento.save()
+            messages.success(request, "Documento guardado correctamente.")
+            return render(request, 'documentos/crear_documento.html', {
+                'form': DocumentoFuncionarioForm(),
+                'mostrar_toast': True
+            })
+
+    else:
+        form = DocumentoFuncionarioForm()
+
+    return render(request, 'documentos/crear_documento.html', {
+        'form': form
+    })
+
+from .models import DocumentoFuncionario, TipoDocumento
+
+def lista_documentos(request):
+    tipo = request.GET.get('tipo')
+    documentos = DocumentoFuncionario.objects.select_related('id_funcionario', 'id_tipo_documento')
+
+    if tipo:
+        documentos = documentos.filter(id_tipo_documento=tipo)
+
+    tipos_documento = TipoDocumento.objects.all()
+    return render(request, 'documentos/lista_documentos.html', {
+        'documentos': documentos,
+        'tipos_documento': tipos_documento
+    })
+
+
 
 def editar_documento(request, id_documento):
     documento = get_object_or_404(DocumentoFuncionario, pk=id_documento)
@@ -141,10 +186,29 @@ def eliminar_documento(request, id_documento):
     documento.delete()
     messages.success(request, "Documento eliminado correctamente.")
     return redirect('lista_documentos_funcionario')
-# ------------------------ TIPOS DE DOCUMENTO ------------------------
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import TipoDocumento
+from .forms import TipoDocumentoForm
+
 def lista_tipos_documento(request):
-    tipos_documento = TipoDocumento.objects.all()
-    return render(request, 'documentos/lista_tipos_documento.html', {'tipos_documento': tipos_documento})
+    filtro = request.GET.get('filtro')
+
+    if filtro == 'obligatorios':
+        tipos_documento = TipoDocumento.objects.filter(obligatorio=True)
+    elif filtro == 'no-obligatorios':
+        tipos_documento = TipoDocumento.objects.filter(obligatorio=False)
+    else:
+        tipos_documento = TipoDocumento.objects.all()
+
+    return render(request, 'documentos/lista_tipos_documento.html', {
+        'tipos_documento': tipos_documento,
+        'filtro': filtro
+    })
+
+    
 
 def crear_tipo_documento(request):
     if request.method == 'POST':
@@ -153,27 +217,28 @@ def crear_tipo_documento(request):
             form.save()
             messages.success(request, "Tipo de documento registrado correctamente.")
             return redirect('lista_tipos_documento')
-        else:
-            form = TipoDocumentoForm()
-        return render(request, 'documentos/crear_tipo_documento.html', {'form': form})
-    
-def editar_tipo_documento(request, id_tipo_documento):
-    tipo_documento = get_object_or_404(TipoDocumento, pk=id_tipo_documento)
+    else:
+        form = TipoDocumentoForm()
+    return render(request, 'documentos/crear_tipo_documento.html', {'form': form})
+
+def editar_tipo_documento(request, pk):
+    tipo = get_object_or_404(TipoDocumento, pk=pk)
     if request.method == 'POST':
-        form = TipoDocumentoForm(request.POST, instance=tipo_documento)
+        form = TipoDocumentoForm(request.POST, instance=tipo)
         if form.is_valid():
             form.save()
             messages.success(request, "Tipo de documento actualizado correctamente.")
             return redirect('lista_tipos_documento')
-        else:
-            form = TipoDocumentoForm(instance=tipo_documento)
-        return render(request, 'documentos/editar_tipo_documento.html', {'form': form})
-    
-def eliminar_tipo_documento(request, id_tipo_documento):
-    tipo_documento = get_object_or_404(TipoDocumento, pk=id_tipo_documento)
-    tipo_documento.delete()
+    else:
+        form = TipoDocumentoForm(instance=tipo)
+    return render(request, 'documentos/crear_tipo_documento.html', {'form': form})
+
+def eliminar_tipo_documento(request, pk):
+    tipo = get_object_or_404(TipoDocumento, pk=pk)
+    tipo.delete()
     messages.success(request, "Tipo de documento eliminado correctamente.")
     return redirect('lista_tipos_documento')
+
 
 # ------------------------ EVALUACIONES ------------------------
 
@@ -338,3 +403,46 @@ def is_admin(user):
     return user.rol == 'admin'
 def is_user(user):
     return user.rol == 'user'
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import DocumentoFuncionarioForm
+
+def crear_documento(request):
+    if request.method == 'POST':
+        form = DocumentoFuncionarioForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Documento registrado correctamente.")
+            return redirect('lista_documentos_funcionario')
+    else:
+        form = DocumentoFuncionarioForm()
+    
+    return render(request, 'documentos/crear_documento.html', {'form': form})
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .forms import DocumentoFuncionarioForm
+from .models import PerfilFuncionario, DocumentoFuncionario
+
+def crear_documento(request):
+    if request.method == 'POST':
+        form = DocumentoFuncionarioForm(request.POST, request.FILES)
+        if form.is_valid():
+            cedula = form.cleaned_data['cedula']
+            try:
+                funcionario = PerfilFuncionario.objects.get(cedula=cedula)
+            except PerfilFuncionario.DoesNotExist:
+                messages.error(request, "El funcionario con cédula ingresada no existe. Por favor registre primero al funcionario.")
+                return redirect('crear_funcionario')  # Ajustá si tu vista se llama distinto
+
+            documento = form.save(commit=False)
+            documento.id_funcionario = funcionario
+            documento.save()
+            messages.success(request, "Documento registrado correctamente.")
+            return redirect('lista_documentos_funcionario')
+    else:
+        form = DocumentoFuncionarioForm()
+
+    return render(request, 'documentos/crear_documento.html', {'form': form})
+
