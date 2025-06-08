@@ -5,117 +5,163 @@
 {% block content %}
 <div class="container">
   <div class="text-center mb-5">
-    <h2 class="fw-bold text-gradient">Bienvenido, {{ request.user.get_full_name|default:request.user.username }}</h2>
+    <h2 class="fw-bold text-dynamic">
+      Bienvenido, {{ request.user.get_full_name|default:request.user.username }}
+    </h2>
   </div>
+
   <div class="row g-4 justify-content-center">
+    <!-- Funcionarios -->
     <div class="col-md-5 col-lg-4 animate-fade">
       <a href="{% url 'lista_funcionarios' %}" class="card-link">
-        <div class="card dashboard-card dark">
+        <div class="card dashboard-card">
           <div class="card-body text-center">
-            <img src="https://img.icons8.com/ios-filled/100/ffffff/user-group-man-man.png" alt="Funcionarios">
+            <i class="fas fa-user-friends dashboard-icon"></i>
             <h5 class="card-title fw-bold mt-3">Funcionarios</h5>
             <p class="card-text">Gestiona la información completa del personal.</p>
           </div>
         </div>
       </a>
     </div>
+
+    <!-- Documentos -->
     <div class="col-md-5 col-lg-4 animate-fade">
       <a href="{% url 'lista_documentos_funcionario' %}" class="card-link">
-        <div class="card dashboard-card dark">
+        <div class="card dashboard-card">
           <div class="card-body text-center">
-            <img src="https://img.icons8.com/ios-filled/100/ffffff/documents.png" alt="Documentos">
+            <i class="fas fa-file-alt dashboard-icon"></i>
             <h5 class="card-title fw-bold mt-3">Documentos</h5>
             <p class="card-text">Controla toda la documentación del personal.</p>
           </div>
         </div>
       </a>
     </div>
-    <div class="col-md-5 col-lg-4 animate-fade">
-      <div class="card dashboard-card dark">
-        <div class="card-body text-center">
-          <img src="https://img.icons8.com/ios-filled/100/ffffff/graph-report.png" alt="Evaluaciones">
-          <h5 class="card-title fw-bold mt-3">Evaluaciones</h5>
-          <p class="card-text">Gestión de evaluaciones del personal.</p>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-5 col-lg-4 animate-fade">
-    <a href="{% url 'lista_eventos' %}" class="text-decoration-none">
-    <div class="card dashboard-card dark">
-      <div class="card-body text-center">
-        <img src="https://img.icons8.com/ios-filled/100/ffffff/planner.png" alt="Eventos">
-        <h5 class="card-title fw-bold mt-3 text-white">Eventos Laborales</h5>
-        <p class="card-text text-white">Registros de traslados, vacaciones, sanciones.</p>
-        </div>
-      </div>
-    </a>
-  </div>
 
+    <!-- Evaluaciones -->
     <div class="col-md-5 col-lg-4 animate-fade">
-    <a href="{% url 'lista_beneficios' %}" class="text-decoration-none">
-      <div class="card dashboard-card dark">
-        <div class="card-body text-center">
-          <img src="https://img.icons8.com/ios-filled/100/ffffff/gift--v1.png" alt="Beneficios">
-          <h5 class="card-title fw-bold mt-3">Beneficios</h5>
-          <p class="card-text">Subsidios, becas y apoyo institucional.</p>
+      <a href="#" class="card-link">
+        <div class="card dashboard-card">
+          <div class="card-body text-center">
+            <i class="fas fa-chart-line dashboard-icon"></i>
+            <h5 class="card-title fw-bold mt-3">Evaluaciones</h5>
+            <p class="card-text">Gestión de evaluaciones del personal.</p>
+          </div>
         </div>
-      </div>
-    </a>
+      </a>
     </div>
+
+    <!-- Eventos Laborales -->
     <div class="col-md-5 col-lg-4 animate-fade">
-      <div class="card dashboard-card dark">
-        <div class="card-body text-center">
-          <img src="https://img.icons8.com/ios-filled/100/ffffff/user.png" alt="Usuarios">
-          <h5 class="card-title fw-bold mt-3">Usuarios</h5>
-          <p class="card-text">Administración de cuentas y roles del sistema.</p>
+      <a href="{% url 'lista_eventos' %}" class="card-link">
+        <div class="card dashboard-card">
+          <div class="card-body text-center">
+            <i class="fas fa-calendar-alt dashboard-icon"></i>
+            <h5 class="card-title fw-bold mt-3">Eventos Laborales</h5>
+            <p class="card-text">Registros de traslados, vacaciones, sanciones.</p>
+          </div>
         </div>
-      </div>
+      </a>
+    </div>
+
+    <!-- Beneficios -->
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <a href="{% url 'lista_beneficios' %}" class="card-link">
+        <div class="card dashboard-card">
+          <div class="card-body text-center">
+            <i class="fas fa-gift dashboard-icon"></i>
+            <h5 class="card-title fw-bold mt-3">Beneficios</h5>
+            <p class="card-text">Subsidios, becas y apoyo institucional.</p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <!-- Usuarios -->
+    <div class="col-md-5 col-lg-4 animate-fade">
+      <a href="#" class="card-link">
+        <div class="card dashboard-card">
+          <div class="card-body text-center">
+            <i class="fas fa-user dashboard-icon"></i>
+            <h5 class="card-title fw-bold mt-3">Usuarios</h5>
+            <p class="card-text">Administración de cuentas y roles del sistema.</p>
+          </div>
+        </div>
+      </a>
     </div>
   </div>
 </div>
 
 <style>
-  .text-gradient {
-    background: linear-gradient(to right, #ffffff, #fdfdfd71);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-family: 'Trebuchet MS', sans-serif;
+  /* Variables para el h2 y las tarjetas */
+  :root {
+    --h2-color: #212121;
+    --card-bg: #e7e5e559;
+    --card-border: rgba(69, 123, 157, 0.178);
+    --card-shadow: rgba(0, 0, 0, 0.377);
+    --card-text-primary: #212121;
+    --card-text-secondary: #555555;
+    --dashboard-accent: #000000a2;
   }
+  .dark-theme {
+    --h2-color: #ffffff;
+    --card-bg: rgb(17, 17, 17);
+    --card-border: rgba(255, 255, 255, 0.3);
+    --card-shadow: rgba(255, 255, 255, 0.1);
+    --card-text-primary: #ffffff;
+    --card-text-secondary: #ccc;
+    --dashboard-accent: #ffffff91;
+  }
+
+  /* Heading dinámico */
+  .text-dynamic {
+    color: var(--h2-color);
+    transition: color 0.3s;
+  }
+
   .card-link {
     text-decoration: none;
     color: inherit;
   }
-  .dashboard-card.dark {
-    background: #1a1a2e00;
+
+  /* Icono del dashboard hereda color del tema */
+  .dashboard-icon {
+    font-size: 4rem;
+    color: var(--card-text-primary);
+    transition: color 0.3s;
+  }
+
+  /* Tarjetas principales */
+  .dashboard-card {
+    background: var(--card-bg);
     border-radius: 20px;
     padding: 30px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0 , 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s;
     cursor: pointer;
     opacity: 0;
     transform: translateY(20px);
     animation: fadeInUp 0.6s forwards;
-    border: 1px solid rgba(69, 123, 157, 0.178); /* borde en tono acentuado */
+    border: 1px solid var(--card-border);
   }
-  .dashboard-card.dark:hover {
-    transform: translateY(0) scale(1.05);
-    box-shadow: 0 35px 35px rgba(255, 255, 255, 0.103);
+  .dashboard-card:hover {
     scale: 1.02;
+    transform: translateY(0) scale(1.05);
+    box-shadow: 0 35px 35px var(--card-shadow);
+    border: 2px solid var(--dashboard-accent);
   }
-  .dashboard-card.dark img {
-    width: 80px;
-    height: 80px;
-  }
-  .dashboard-card.dark h5 {
+
+  .dashboard-card h5 {
     font-size: 1.5rem;
-    color: #fff;
+    color: var(--card-text-primary);
     font-family: 'Franklin Gothic Medium', sans-serif;
+    transition: color 0.3s;
   }
-  .dashboard-card.dark p {
+  .dashboard-card p {
     font-size: 1rem;
-    color: #ccc;
+    color: var(--card-text-secondary);
     font-family: 'Lucida Sans', sans-serif;
+    transition: color 0.3s;
   }
+
   @keyframes fadeInUp {
     to {
       opacity: 1;

@@ -1,0 +1,248 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Funcionarios | TH-FCYT{% endblock %}
+{% block titulo_pagina %}
+  <i class="fas fa-users text-gradient"></i> Funcionarios Registrados
+{% endblock %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+  .search-container {
+    background-color: #03030369;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  .search-container .form-control {
+    background: #1818182d;
+    border: none;
+    color: #e0e0e0;
+  }
+  .view-toggle-btn.active {
+    background: #353535;
+    color: #fff;
+  }
+  .dashboard-card.dark {
+    background: #0c0c0cc0;
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+    cursor: pointer;
+  }
+  .dashboard-card.dark:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+  }
+  .table-responsive {
+    background: #13131365;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
+  .table-dark thead { background: #121213bd; }
+  .table-dark td, .table-dark th { color: #e0e0e0; }
+  .table-hover tbody tr:hover { background: #2c2c4a; }
+  .badge-estado.bg-success { background: #00bcd4; color: #000; }
+  .badge-estado.bg-danger  { background: #f44336; }
+  .animate-fade {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease forwards;
+  }
+  @keyframes fadeInUp { to { opacity:1; transform:translateY(0); } }
+  .modal-backdrop.show {
+    background: rgba(30,30,30,0.3);
+    backdrop-filter: blur(5px);
+  }
+</style>
+
+<!-- Contador de registros y botón agregar -->
+<div class="mb-3 d-flex justify-content-between align-items-center">
+  <div class="text-light">
+    <i class="fas fa-database me-2"></i>
+    {{ funcionarios|length }} registro{% if funcionarios|length != 1 %}s{% endif %}
+  </div>
+  <a href="{% url 'crear_funcionario' %}" class="btn btn-gradient" style="background:#000;color:#fff;">
+    <i class="fas fa-plus me-1"></i> Agregar funcionario
+  </a>
+</div>
+
+<!-- Filtros -->
+<div class="search-container d-flex align-items-center gap-3">
+  <form method="get" class="flex-grow-1 me-2">
+    <div class="input-group">
+      <span class="input-group-text bg-transparent border-0">
+        <i class="fas fa-search text-gradient"></i>
+      </span>
+      <input type="text" name="search" class="form-control" placeholder="Buscar funcionario..."
+        value="{{ request.GET.search|default_if_none:'' }}"
+        onkeydown="if(event.key==='Enter') this.form.submit()">
+    </div>
+  </form>
+  <div class="btn-group me-2">
+    <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+      <i class="fas fa-filter me-1"></i> Ordenar
+    </button>
+    <ul class="dropdown-menu dropdown-menu-dark">
+      <li><a class="dropdown-item"
+        href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=nombre&view={{ view_mode }}">Nombre A → Z</a></li>
+      <li><a class="dropdown-item"
+        href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=-nombre&view={{ view_mode }}">Nombre Z → A</a></li>
+      <li><a class="dropdown-item"
+        href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=cargo&view={{ view_mode }}">Cargo</a></li>
+      <li><a class="dropdown-item"
+        href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=departamento&view={{ view_mode }}">Departamento</a></li>
+      <li><a class="dropdown-item"
+        href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=estado&view={{ view_mode }}">Estado</a></li>
+    </ul>
+  </div>
+  <div class="btn-group">
+    <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.order_by %}order_by={{ request.GET.order_by }}&{% endif %}view=cards"
+      class="btn btn-outline-light view-toggle-btn {% if view_mode == 'cards' %}active{% endif %}">
+      <i class="fas fa-th-large me-1"></i> Tarjetas
+    </a>
+    <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.order_by %}order_by={{ request.GET.order_by }}&{% endif %}view=tables"
+      class="btn btn-outline-light view-toggle-btn {% if view_mode == 'tables' %}active{% endif %}">
+      <i class="fas fa-table me-1"></i> Tablas
+    </a>
+  </div>
+</div>
+
+{% if view_mode == 'cards' %}
+<!-- Vista Tarjetas -->
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+  {% for func in funcionarios %}
+    <div class="col">
+      <div class="card dashboard-card dark animate-fade" data-bs-toggle="modal" data-bs-target="#modalFuncionario{{ func.id_funcionario }}">
+        <div class="card-body text-center">
+          {% if func.foto %}
+            <img src="{{ func.foto.url }}" class="rounded-circle mb-3" alt="Foto de {{ func.nombre }}">
+          {% else %}
+            <i class="fas fa-user-circle fs-1 text-gradient mb-3"></i>
+          {% endif %}
+          <h5 class="text-white">
+            {{ func.nombre|cut:" "|default:func.nombre }} {{ func.apellido|cut:" "|default:func.apellido }}
+          </h5>
+          <p class="text-secondary mb-1">{{ func.cargo }}</p>
+          <small class="text-muted">{{ func.departamento }}</small><br>
+          <span class="badge badge-estado {% if func.estado == 'Activo' %}bg-success{% else %}bg-danger{% endif %}">
+            {{ func.estado }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL: SOLO AQUÍ van los botones editar/eliminar -->
+    <div class="modal fade" id="modalFuncionario{{ func.id_funcionario }}" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content bg-dark text-light">
+          <div class="modal-header border-secondary border-bottom">
+            <h5 class="modal-title">{{ func.nombre }} {{ func.apellido }}</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <div class="row g-4 align-items-center">
+              <div class="col-md-4 text-center">
+                {% if func.foto %}
+                  <img src="{{ func.foto.url }}" class="rounded-circle mb-3" width="110">
+                {% else %}
+                  <i class="fas fa-user-circle fs-1 text-gradient mb-3" style="font-size: 110px"></i>
+                {% endif %}
+              </div>
+              <div class="col-md-8">
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item bg-dark text-light border-secondary"><b>Cédula:</b> {{ func.cedula }}</li>
+                  <li class="list-group-item bg-dark text-light border-secondary"><b>Cargo:</b> {{ func.cargo }}</li>
+                  <li class="list-group-item bg-dark text-light border-secondary"><b>Fecha de Ingreso:</b> {{ func.fecha_ingreso|date:"d/m/Y" }}</li>
+                  <li class="list-group-item bg-dark text-light border-secondary"><b>Departamento:</b> {{ func.departamento }}</li>
+                  <li class="list-group-item bg-dark text-light border-secondary"><b>Estado:</b> {{ func.estado }}</li>
+                  <li class="list-group-item bg-dark text-light border-secondary"><b>Estado Civil:</b> {{ func.estado_civil }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer bg-dark justify-content-end">
+            {% if user.is_staff %}
+              <a href="{% url 'editar_funcionario' func.id_funcionario %}" class="btn btn-outline-warning me-2">
+                <i class="fas fa-edit"></i> Editar
+              </a>
+              <button class="btn btn-outline-danger me-2" onclick="confirmarEliminar('{{ func.id_funcionario }}')">
+                <i class="fas fa-trash-alt"></i> Eliminar
+              </button>
+            {% endif %}
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% else %}
+<!-- Vista Tabla -->
+<div class="table-responsive">
+  <table class="table table-hover table-dark mb-0">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Cédula</th>
+        <th>Cargo</th>
+        <th>Departamento</th>
+        <th>Estado</th>
+        {% if user.is_staff %}<th>Acciones</th>{% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in funcionarios %}
+      <tr>
+        <td>{{ f.get_full_name }}</td>
+        <td>{{ f.cedula }}</td>
+        <td>{{ f.cargo }}</td>
+        <td>{{ f.departamento }}</td>
+        <td>
+          <span class="badge badge-estado {% if f.estado == 'Activo' %}bg-success{% else %}bg-danger{% endif %}">
+            {{ f.get_estado_display }}
+          </span>
+        </td>
+        {% if user.is_staff %}
+        <td>
+          <a href="{% url 'editar_funcionario' f.id_funcionario %}" class="btn btn-sm btn-light me-1"><i class="fas fa-edit text-dark"></i></a>
+          <button class="btn btn-sm btn-danger" onclick="confirmarEliminar('{{ f.id_funcionario }}')"><i class="fas fa-trash-alt text-white"></i></button>
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- Modal Confirmar Eliminación -->
+<div class="modal fade" id="confirmarEliminarModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-light">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title">Confirmar Eliminación</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Está seguro de eliminar este funcionario?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+        <a href="#" id="confirmarEliminarBtn" class="btn btn-danger">Eliminar</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function confirmarEliminar(id) {
+    const btn = document.getElementById('confirmarEliminarBtn');
+    btn.href = `{% url 'eliminar_funcionario' 0 %}`.replace('0', id);
+    new bootstrap.Modal(document.getElementById('confirmarEliminarModal')).show();
+  }
+</script>
+{% endblock %}

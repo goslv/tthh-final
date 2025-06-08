@@ -3,6 +3,26 @@ from .models import PerfilFuncionario, TipoDocumento, DocumentoFuncionario, Even
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 
+ESTADO_CHOICES = (
+    ('', '— Todos —'),
+    ('activo', 'Activo'),
+    ('inactivo', 'Inactivo'),
+)
+
+class FuncionarioFilterForm(forms.Form):
+    search       = forms.CharField(required=False, label='', widget=forms.TextInput(attrs={
+        'placeholder': 'Buscar funcionario…',
+        'class': 'form-control me-2',
+    }))
+    estado       = forms.ChoiceField(choices=ESTADO_CHOICES, required=False, widget=forms.Select(attrs={
+        'class': 'form-select me-2',
+    }))
+    departamento = forms.ModelChoiceField(
+        queryset=PerfilFuncionario.objects.values_list('departamento', flat=True).distinct(),
+        required=False,
+        label='Departamento',
+        widget=forms.Select(attrs={'class': 'form-select me-2'})
+    )
 class PerfilFuncionarioForm(forms.ModelForm):
     class Meta:
         model = PerfilFuncionario
@@ -18,8 +38,6 @@ class PerfilFuncionarioForm(forms.ModelForm):
             'estado_civil': forms.Select(attrs={'class': 'form-control'}),
         }
 
-from django import forms
-from .models import TipoDocumento
 
 class TipoDocumentoForm(forms.ModelForm):
     class Meta:
@@ -30,10 +48,6 @@ class TipoDocumentoForm(forms.ModelForm):
             'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-white', 'rows': 3}),
             'obligatorio': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-
-
-from django import forms
-from .models import DocumentoFuncionario, PerfilFuncionario
 
 class DocumentoFuncionarioForm(forms.ModelForm):
     cedula = forms.CharField(label="Cédula del Funcionario", max_length=45, widget=forms.TextInput(attrs={'class': 'form-control'}))

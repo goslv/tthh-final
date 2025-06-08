@@ -5,19 +5,19 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import PerfilUsuario, PerfilFuncionario, TipoDocumento, DocumentoFuncionario, EventoLaboral, Evaluacion, BeneficioFuncionario
 from django.core.validators import FileExtensionValidator
-from .forms import PerfilFuncionarioForm, DocumentoFuncionarioForm, EventoLaboralForm, DocumentoFuncionarioForm, TipoDocumentoForm, EvaluacionForm, BeneficioFuncionarioForm, UsuarioForm, RegistroForm
+from .forms import PerfilFuncionarioForm, DocumentoFuncionarioForm, EventoLaboralForm, TipoDocumentoForm, EvaluacionForm, BeneficioFuncionarioForm, UsuarioForm, RegistroForm, FuncionarioFilterForm
 from django.contrib.auth import authenticate
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from .models import PerfilFuncionario
+from django.contrib.auth import authenticate, login, logout
+from django.db.models import Q
 
+# ------------------------ PRUEBA DE TEMPLATE ------------------------
 
 def test_template(request):
     return render(request, 'auth/login.html')  # prueba directa
 
-    # ------------------------ AUTENTICACIÓN ------------------------
+# ------------------------ AUTENTICACIÓN ------------------------
 
 def login_view(request):
     if request.method == 'POST':
@@ -52,7 +52,7 @@ def signup_view(request):
         form = RegistroForm()
     return render(request, 'auth/signup.html', {'form': form})
 
-    # ------------------------ VISTAS GENERALES ------------------------
+# ------------------------ VISTAS GENERALES ------------------------
 
 @login_required
 def menu_inicio(request):
@@ -62,12 +62,34 @@ def menu_inicio(request):
 
 @login_required
 def lista_funcionarios(request):
-    funcionarios = PerfilFuncionario.objects.all()
-    departamentos = PerfilFuncionario.objects.values_list('departamento', flat=True).distinct()
+    form = FuncionarioFilterForm(request.GET or None)
+    qs = PerfilFuncionario.objects.all()
+
+    if form.is_valid():
+        sd = form.cleaned_data
+        if sd['search']:
+            qs = qs.filter(
+                Q(nombre__icontains=sd['search']) |
+                Q(apellido__icontains=sd['search']) |
+                Q(cedula__icontains=sd['search'])
+            )
+        if sd['estado']:
+            qs = qs.filter(estado=sd['estado'])
+        if sd['departamento']:
+            qs = qs.filter(departamento=sd['departamento'])
+    # si quieres ordenar:
+    ordenar = request.GET.get('order_by', 'nombre')
+    qs = qs.order_by(ordenar)
+
+    # decidir vista: 'cards' o 'tables'
+    view_mode = request.GET.get('view', 'cards')
+
     return render(request, 'funcionarios/lista_funcionarios.html', {
-    'funcionarios': funcionarios,
-    'departamentos': departamentos
+        'form': form,
+        'funcionarios': qs,
+        'view_mode': view_mode,
     })
+
 
 @login_required
 def crear_funcionario(request):
@@ -89,17 +111,19 @@ def crear_funcionario(request):
 
 @login_required
 def editar_funcionario(request, id_funcionario):
-    funcionario = get_object_or_404(PerfilFuncionario, pk=id_funcionario)
+    funcionario = get_object_or_404(PerfilFuncionario, id_funcionario=id_funcionario)
     if request.method == 'POST':
-        form = PerfilFuncionarioForm(request.POST, instance=funcionario)
+        form = PerfilFuncionarioForm(request.POST, request.FILES, instance=funcionario)
         if form.is_valid():
             form.save()
-            messages.success(request, "Funcionario actualizado correctamente.")
-            return redirect('lista_funcionarios')
+            # Opcional: mensaje de éxito
+            return redirect('lista_funcionarios')  # Redirige a la misma página de funcionarios
         else:
-            form = PerfilFuncionarioForm(instance=funcionario)
-        return render(request, 'funcionarios/editar_funcionario.html', {'form': form})
-
+            # Si no es válido, puedes mostrar error (esto no refresca el modal, deberías recargar la página)
+            return redirect('lista_funcionarios')
+    else:
+        return redirect('lista_funcionarios')
+    
 @login_required
 def eliminar_funcionario(request, id_funcionario):
     funcionario = get_object_or_404(PerfilFuncionario, pk=id_funcionario)
@@ -107,7 +131,7 @@ def eliminar_funcionario(request, id_funcionario):
     messages.success(request, "Funcionario eliminado correctamente.")
     return redirect('lista_funcionarios')
 
-    # ------------------------ DOCUMENTOS ------------------------
+# ------------------------ DOCUMENTOS ------------------------
 
 def lista_documentos(request):
     documentos = DocumentoFuncionario.objects.select_related('id_funcionario', 'id_tipo_documento').all()
@@ -167,6 +191,26 @@ def lista_documentos(request):
         'tipos_documento': tipos_documento
     })
 
+def crear_documento(request):
+    if request.method == 'POST':
+        form = DocumentoFuncionarioForm(request.POST, request.FILES)
+        if form.is_valid():
+            cedula = form.cleaned_data['cedula']
+            try:
+                funcionario = PerfilFuncionario.objects.get(cedula=cedula)
+            except PerfilFuncionario.DoesNotExist:
+                messages.error(request, "El funcionario con cédula ingresada no existe. Por favor registre primero al funcionario.")
+                return redirect('crear_funcionario')
+
+            documento = form.save(commit=False)
+            documento.id_funcionario = funcionario
+            documento.save()
+            messages.success(request, "Documento registrado correctamente.")
+            return redirect('lista_documentos_funcionario')
+    else:
+        form = DocumentoFuncionarioForm()
+
+    return render(request, 'documentos/crear_documento.html', {'form': form})
 
 
 def editar_documento(request, id_documento):
@@ -186,12 +230,6 @@ def eliminar_documento(request, id_documento):
     documento.delete()
     messages.success(request, "Documento eliminado correctamente.")
     return redirect('lista_documentos_funcionario')
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import TipoDocumento
-from .forms import TipoDocumentoForm
 
 def lista_tipos_documento(request):
     filtro = request.GET.get('filtro')
@@ -293,8 +331,6 @@ def crear_beneficio(request):
 
     funcionarios = PerfilFuncionario.objects.all()
     return render(request, 'beneficios/crear_beneficio.html', {'form': form, 'funcionarios': funcionarios})
-
-
     
 def editar_beneficio(request, id_beneficio):
     beneficio = get_object_or_404(BeneficioFuncionario, pk=id_beneficio)
@@ -315,6 +351,7 @@ def eliminar_beneficio(request, id_beneficio):
     return redirect('lista_beneficios')
 
 # ------------------------ EVENTOS FUNCIONARIOS ------------------------
+
 def lista_eventos(request):
     eventos = EventoLaboral.objects.select_related('id_funcionario').all()
     return render(request, 'eventos/lista_eventos_funcionario.html', {'eventos': eventos})
@@ -332,8 +369,6 @@ def crear_evento(request):
     funcionarios = PerfilFuncionario.objects.all()
     return render(request, 'eventos/crear_evento.html', {'form': form, 'funcionarios': funcionarios})
 
-
-
 def editar_evento(request, id_evento):
     evento = get_object_or_404(EventoLaboral, pk=id_evento)
     if request.method == 'POST':
@@ -348,7 +383,6 @@ def editar_evento(request, id_evento):
     funcionarios = PerfilFuncionario.objects.all()
     return render(request, 'eventos/editar_evento.html', {'form': form, 'funcionarios': funcionarios})
 
-    
 def eliminar_evento(request, id_evento):
     evento = get_object_or_404(EventoLaboral, pk=id_evento)
     evento.delete()
@@ -360,7 +394,7 @@ def eliminar_evento(request, id_evento):
 #-------------------------- USUARIOS --------------------------
 
 def lista_usuarios(request):
-    usuarios = Usuario.objects.all()
+    usuarios = PerfilUsuario.objects.all()
     return render(request, 'usuarios/lista_usuarios.html', {'usuarios': usuarios})
 
 def crear_usuario(request):
@@ -370,10 +404,10 @@ def crear_usuario(request):
         password_hash = make_password(password_claro)
         rol = request.POST['rol']
 
-        if Usuario.objects.filter(username=username).exists():
+        if PerfilUsuario.objects.filter(username=username).exists():
             messages.error(request, "El nombre de usuario ya está en uso.")
         else:
-            usuario = Usuario.objects.create(username=username, password=password_hash, rol=rol)
+            usuario = PerfilUsuario.objects.create(username=username, password=password_hash, rol=rol)
             messages.success(request, "Usuario registrado correctamente.")
             return redirect('lista_usuarios')
     else:
@@ -381,7 +415,7 @@ def crear_usuario(request):
     return render(request, 'usuarios/crear_usuario.html', {'form': form})
 
 def editar_usuario(request, id_usuario):
-    usuario = get_object_or_404(User, pk=id_usuario)
+    usuario = get_object_or_404(PerfilUsuario, pk=id_usuario)
     if request.method == 'POST':
         form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
@@ -393,56 +427,14 @@ def editar_usuario(request, id_usuario):
         return render(request, 'tasks/editar_usuario.html', {'form': form})
     
 def eliminar_usuario(request, id_usuario):
-    usuario = get_object_or_404(Usuario, pk=id_usuario)
+    usuario = get_object_or_404(PerfilUsuario, pk=id_usuario)
     usuario.delete()
     messages.success(request, "Usuario eliminado correctamente.")
     return redirect('lista_usuarios')
 
 # ------------------------ PERMISOS ------------------------
+
 def is_admin(user):
     return user.rol == 'admin'
 def is_user(user):
     return user.rol == 'user'
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import DocumentoFuncionarioForm
-
-def crear_documento(request):
-    if request.method == 'POST':
-        form = DocumentoFuncionarioForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Documento registrado correctamente.")
-            return redirect('lista_documentos_funcionario')
-    else:
-        form = DocumentoFuncionarioForm()
-    
-    return render(request, 'documentos/crear_documento.html', {'form': form})
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import DocumentoFuncionarioForm
-from .models import PerfilFuncionario, DocumentoFuncionario
-
-def crear_documento(request):
-    if request.method == 'POST':
-        form = DocumentoFuncionarioForm(request.POST, request.FILES)
-        if form.is_valid():
-            cedula = form.cleaned_data['cedula']
-            try:
-                funcionario = PerfilFuncionario.objects.get(cedula=cedula)
-            except PerfilFuncionario.DoesNotExist:
-                messages.error(request, "El funcionario con cédula ingresada no existe. Por favor registre primero al funcionario.")
-                return redirect('crear_funcionario')  # Ajustá si tu vista se llama distinto
-
-            documento = form.save(commit=False)
-            documento.id_funcionario = funcionario
-            documento.save()
-            messages.success(request, "Documento registrado correctamente.")
-            return redirect('lista_documentos_funcionario')
-    else:
-        form = DocumentoFuncionarioForm()
-
-    return render(request, 'documentos/crear_documento.html', {'form': form})
-

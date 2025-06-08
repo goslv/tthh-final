@@ -18,7 +18,7 @@ urlpatterns = [
     # Funcionario
     path('funcionarios/', views.lista_funcionarios, name='lista_funcionarios'),
     path('funcionarios/crear/', views.crear_funcionario, name='crear_funcionario'),
-    path('funcionarios/editar/<int:id_funcionario>/', views.editar_funcionario, name='actualizar_funcionario'),
+    path('funcionarios/editar/<int:id_funcionario>/', views.editar_funcionario, name='editar_funcionario'),
     path('funcionarios/eliminar/<int:id_funcionario>/', views.eliminar_funcionario, name='eliminar_funcionario'),
 
     # Documentos
