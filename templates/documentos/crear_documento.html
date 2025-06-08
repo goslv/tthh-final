@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+<<<<<<< HEAD
 {% block content %}
 <div class="container mt-4">
     <h2>Nuevo Documento para Funcionario</h2>
@@ -10,3 +11,124 @@
 </div>
 {% endblock %}
 
+=======
+{% load static %}
+{% block content %}
+
+<div class="container mt-5">
+    <div class="card shadow-lg p-4 bg-dark text-white rounded-4">
+        <h3 class="mb-4">Registro de Documento</h3>
+
+        
+
+        <form method="post" enctype="multipart/form-data" class="row g-3">
+            {% csrf_token %}
+
+            <!-- Cédula -->
+            <div class="col-md-6">
+                <label for="id_cedula" class="form-label">
+                    <i class="fas fa-id-card me-1"></i> Cédula del Funcionario
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">
+                        <i class="fas fa-id-card"></i>
+                    </span>
+                    {{ form.cedula }}
+                </div>
+            </div>
+
+            <!-- Tipo de Documento -->
+            <div class="col-md-6">
+                <label for="id_id_tipo_documento" class="form-label">
+                    <i class="fas fa-file-alt me-1"></i> Tipo de Documento
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">
+                        <i class="fas fa-file-alt"></i>
+                    </span>
+                    {{ form.id_tipo_documento }}
+                    <a href="{% url 'crear_tipo_documento' %}" class="btn btn-outline-light" title="Nuevo tipo de documento">
+                        <i class="fas fa-plus"></i>
+                    </a>
+                    <a href="{% url 'lista_tipos_documento' %}" class="btn btn-outline-light" title="Ver tipos registrados">
+                        <i class="fas fa-list"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Fecha Presentación -->
+            <div class="col-md-6">
+                <label for="id_fecha_presentacion" class="form-label">
+                    <i class="fas fa-calendar-alt me-1"></i> Fecha de Presentación
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">
+                        <i class="fas fa-calendar-alt"></i>
+                    </span>
+                    {{ form.fecha_presentacion }}
+                </div>
+            </div>
+
+            <!-- Archivo -->
+            <div class="col-md-6">
+                <label for="id_archivo" class="form-label">
+                    <i class="fas fa-paperclip me-1"></i> Archivo
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">
+                        <i class="fas fa-paperclip"></i>
+                    </span>
+                    {{ form.archivo }}
+                </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="col-md-6">
+                <label for="id_estado" class="form-label">
+                    <i class="fas fa-info-circle me-1"></i> Estado
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text bg-secondary text-white">
+                        <i class="fas fa-info-circle"></i>
+                    </span>
+                    {{ form.estado }}
+                </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="col-12 mt-4 d-flex justify-content-between">
+                <button type="submit" class="btn btn-light">
+                    <i class="fas fa-save"></i> Guardar
+                </button>
+                <a href="{% url 'lista_documentos' %}" class="btn btn-outline-light">
+                    <i class="fas fa-arrow-left"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION -->
+{% if mostrar_toast %}
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1055">
+    <div id="toastSuccess" class="toast text-white bg-success show" role="alert">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="fas fa-check-circle me-2"></i> Documento registrado correctamente.
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+    </div>
+</div>
+<script>
+    setTimeout(function() {
+        const toast = document.getElementById('toastSuccess');
+        if (toast) {
+            toast.classList.remove('show');
+        }
+    }, 4000);
+</script>
+{% endif %}
+
+{% endblock %}
+>>>>>>> branch-RossNuevo

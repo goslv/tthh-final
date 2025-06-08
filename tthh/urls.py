@@ -28,6 +28,17 @@ urlpatterns = [
     path('documentos-funcionario/', views.lista_documentos, name='lista_documentos_funcionario'),
     path('documentos-funcionario/crear/', views.crear_documento, name='crear_documento'),
     path('documentos-funcionario/editar/<int:id_documento>/', views.editar_documento, name='editar_documento'),
+<<<<<<< HEAD
+=======
+    path('tipos-documento/editar/<int:pk>/', views.editar_tipo_documento, name='editar_tipo_documento'),
+    path('tipos-documento/eliminar/<int:pk>/', views.eliminar_tipo_documento, name='eliminar_tipo_documento'),
+    path('documentos/', views.lista_documentos, name='lista_documentos'),
+    path('documentos/crear/', views.crear_documento, name='crear_documento'),
+    path('documentos/editar/<int:id_documento>/', views.editar_documento, name='editar_documento'),
+    path('documentos/eliminar/<int:id_documento>/', views.eliminar_documento, name='eliminar_documento'),
+
+
+>>>>>>> branch-RossNuevo
 
     # Evaluaciones
     path('evaluaciones/', views.lista_evaluaciones, name='lista_evaluaciones'),
@@ -38,6 +49,7 @@ urlpatterns = [
     # Beneficios
     path('beneficios/', views.lista_beneficios, name='lista_beneficios'),
     path('beneficios/crear/', views.crear_beneficio, name='crear_beneficio'),
+<<<<<<< HEAD
     path('beneficios/editar/<int:id>/', views.editar_beneficio, name='editar_beneficio'),
     path('beneficios/eliminar/<int:id>/', views.eliminar_beneficio, name='eliminar_beneficio'),
 
@@ -46,6 +58,17 @@ urlpatterns = [
     path('eventos/crear/', views.registrar_evento_funcionario, name='crear_evento'),
     path('eventos/editar/<int:id>/', views.editar_evento, name='editar_evento'),
     path('eventos/eliminar/<int:id>/', views.eliminar_evento, name='eliminar_evento'),
+=======
+    path('beneficios/editar/<int:id_beneficio>/', views.editar_beneficio, name='editar_beneficio'),
+    path('beneficios/eliminar/<int:id>/', views.eliminar_beneficio, name='eliminar_beneficio'),
+
+    # Eventos Laborales
+    path('eventos/', views.lista_eventos, name='lista_eventos'),
+    path('eventos/crear/', views.crear_evento, name='crear_evento'),
+    path('eventos/editar/<int:id_evento>/', views.editar_evento, name='editar_evento'),
+    path('eventos/eliminar/<int:id_evento>/', views.eliminar_evento, name='eliminar_evento'),
+
+>>>>>>> branch-RossNuevo
 
     # Cambiar contraseña
     path('cambiar_contrasena/', auth_views.PasswordChangeView.as_view(template_name='tasks/cambiar_contrasena.html'), name='cambiar_contrasena'),

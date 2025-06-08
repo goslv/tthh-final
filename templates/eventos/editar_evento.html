@@ -1,0 +1,180 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Editar Evento Laboral | TH-FCYT{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center min-vh-100 px-3">
+  <div class="card create-card shadow-lg animate-fade-in">
+    <div class="card-header bg-warning text-dark text-center">
+      <h4 class="mb-0">Editar Evento</h4>
+    </div>
+    <div class="card-body">
+
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          <strong>Revisá los errores en el formulario:</strong>
+          <ul>
+            {% for field in form %}
+              {% for error in field.errors %}
+                <li>{{ field.label }}: {{ error }}</li>
+              {% endfor %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+
+      <form method="post" enctype="multipart/form-data" class="row g-3">
+        {% csrf_token %}
+
+        <div class="col-md-6">
+          <label class="form-label text-light">Tipo de Evento</label>
+          <div class="input-group">
+            <span class="input-group-text bg-transparent">
+              <i class="fas fa-briefcase text-white"></i>
+            </span>
+            <select name="tipo_evento" class="form-select form-control-dark" required>
+              <option value="Sancion" {% if form.initial.tipo_evento == "Sancion" %}selected{% endif %}>Sanción</option>
+              <option value="Traslado" {% if form.initial.tipo_evento == "Traslado" %}selected{% endif %}>Traslado</option>
+              <option value="Vacaciones" {% if form.initial.tipo_evento == "Vacaciones" %}selected{% endif %}>Vacaciones</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-light">Funcionario</label>
+          <div class="input-group">
+            <span class="input-group-text bg-transparent">
+              <i class="fas fa-user text-white"></i>
+            </span>
+            <select class="form-select form-control-dark" name="id_funcionario" required>
+              {% for funcionario in funcionarios %}
+                <option value="{{ funcionario.id_funcionario }}"
+                  {% if funcionario.id_funcionario == form.initial.id_funcionario.id_funcionario %}selected{% endif %}>
+                  {{ funcionario.nombre }} {{ funcionario.apellido }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label text-light">Motivo</label>
+          <div class="input-group">
+            <span class="input-group-text bg-transparent">
+              <i class="fas fa-align-left text-white"></i>
+            </span>
+            <textarea name="motivo" class="form-control form-control-dark" rows="3" required>{{ form.initial.motivo }}</textarea>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-light">Fecha de Inicio</label>
+          <div class="input-group">
+            <span class="input-group-text bg-transparent">
+              <i class="fas fa-calendar-alt text-white"></i>
+            </span>
+            <input type="date" name="fecha_inicio" value="{{ form.initial.fecha_inicio }}" class="form-control form-control-dark" required>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label text-light">Fecha de Fin</label>
+          <div class="input-group">
+            <span class="input-group-text bg-transparent">
+              <i class="fas fa-calendar-alt text-white"></i>
+            </span>
+            <input type="date" name="fecha_fin" value="{{ form.initial.fecha_fin }}" class="form-control form-control-dark" required>
+          </div>
+        </div>
+
+        <div class="col-md-12">
+          <label class="form-label text-light">Archivo de Resolución</label>
+          <div class="input-group">
+            <span class="input-group-text bg-transparent">
+              <i class="fas fa-file-upload text-white"></i>
+            </span>
+            <input type="file" name="url_resolucion_evento" class="form-control form-control-dark" accept=".pdf,.jpg,.jpeg,.png">
+          </div>
+        </div>
+
+        <div class="col-12 text-center mt-4">
+          <button type="submit" class="btn btn-gradient me-2">
+            <i class="fas fa-save"></i> Guardar Cambios
+          </button>
+          <a href="{% url 'lista_eventos' %}" class="btn btn-gradient-outline">
+            <i class="fas fa-arrow-left"></i> Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<style>
+  .create-card {
+    max-width: 720px;
+    width: 100%;
+    border: none;
+    border-radius: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+  }
+
+  .form-control-dark,
+  .form-select.form-control-dark {
+    background: #000;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #e0e0e0;
+  }
+
+  .form-control-dark:focus,
+  .form-select.form-control-dark:focus {
+    background: rgba(0, 0, 0, 0.8);
+    border-color: #f1c40f;
+    box-shadow: 0 0 0 0.2rem rgba(241, 196, 15, 0.5);
+    color: #fff;
+  }
+
+  .btn-gradient {
+    background: linear-gradient(135deg, #000000, #131320);
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.25rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+  }
+
+  .btn-gradient:hover {
+    background: linear-gradient(135deg, #131320, #000000);
+  }
+
+  .btn-gradient-outline {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 0.65rem 1.25rem;
+    border-radius: 0.5rem;
+  }
+
+  .btn-gradient-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .animate-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  @keyframes fadeInUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: brightness(0) invert(1);
+  }
+</style>
+{% endblock %}
