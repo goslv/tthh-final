@@ -11,6 +11,7 @@
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
 
 <style>
+    /* Contenedor de búsqueda / filtros / toggles */
     .search-container {
         background-color: #03030369;
         border-radius: 0.75rem;
@@ -34,13 +35,13 @@
         color: #fff;
     }
 
+    /* Tarjetas */
     .dashboard-card.dark {
         background: #0c0c0cc0;
         border-radius: 1rem;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
         transition: transform 0.3s, box-shadow 0.3s;
         position: relative;
-        cursor: pointer;
     }
 
     .dashboard-card.dark:hover {
@@ -56,6 +57,14 @@
         gap: 0.25rem;
     }
 
+    .dashboard-card.dark img,
+    .dashboard-card.dark i.fs-1 {
+        width: 80px;
+        height: 80px;
+        filter: invert(1);
+    }
+
+    /* Tabla */
     .table-responsive {
         background: #13131365;
         border-radius: 1rem;
@@ -75,6 +84,7 @@
         background: #2c2c4a;
     }
 
+    /* Badges */
     .badge-estado.bg-success {
         background: #00bcd4;
         color: #000;
@@ -84,6 +94,7 @@
         background: #f44336;
     }
 
+    /* Animación entrada */
     .animate-fade {
         opacity: 0;
         transform: translateY(20px);
@@ -96,199 +107,145 @@
             transform: translateY(0);
         }
     }
-
-    /* Blur para el backdrop de bootstrap modal */
-    .modal-backdrop.show {
-        background: rgba(30, 30, 30, 0.3);
-        backdrop-filter: blur(5px);
-    }
-
-    .modal-footer>div {
-        display: flex;
-        gap: 0.5rem;
-        align-items: center;
-    }
 </style>
 
-<!-- BARRA DE BÚSQUEDA / ORDENAR / VISTA -->
-<div class="search-container d-flex align-items-center gap-3">
-    <form method="get" class="flex-grow-1 me-2">
+<!-- BARRA DE BUSQUEDA, ORDEN, VISTA -->
+<div class="search-container d-flex flex-wrap align-items-center gap-3">
+    <div class="flex-grow-1">
         <div class="input-group">
             <span class="input-group-text bg-transparent border-0">
                 <i class="fas fa-search text-gradient"></i>
             </span>
-            <input type="text" name="search" class="form-control" placeholder="Buscar funcionario..."
-                value="{{ request.GET.search|default_if_none:'' }}"
-                onkeydown="if(event.key==='Enter') this.form.submit()">
+            <input id="searchInput" type="text" class="form-control" placeholder="Buscar funcionario...">
         </div>
-    </form>
-
-    <div class="btn-group me-2">
-        <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
-            <i class="fas fa-filter me-1"></i> Ordenar
-        </button>
-        <ul class="dropdown-menu dropdown-menu-dark">
-            <li><a class="dropdown-item"
-                    href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=nombre&view={{ view_mode }}">Nombre
-                    A → Z</a></li>
-            <li><a class="dropdown-item"
-                    href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=-nombre&view={{ view_mode }}">Nombre
-                    Z → A</a></li>
-            <li><a class="dropdown-item"
-                    href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=cargo&view={{ view_mode }}">Cargo</a>
-            </li>
-            <li><a class="dropdown-item"
-                    href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=departamento&view={{ view_mode }}">Departamento</a>
-            </li>
-            <li><a class="dropdown-item"
-                    href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}order_by=estado&view={{ view_mode }}">Estado</a>
-            </li>
-        </ul>
     </div>
-
-    <div class="btn-group">
-        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.order_by %}order_by={{ request.GET.order_by }}&{% endif %}view=cards"
-            class="btn btn-outline-light view-toggle-btn {% if view_mode == 'cards' %}active{% endif %}">
-            <i class="fas fa-th-large me-1"></i> Tarjetas
-        </a>
-        <a href="?{% if request.GET.search %}search={{ request.GET.search }}&{% endif %}{% if request.GET.order_by %}order_by={{ request.GET.order_by }}&{% endif %}view=tables"
-            class="btn btn-outline-light view-toggle-btn {% if view_mode == 'tables' %}active{% endif %}">
-            <i class="fas fa-table me-1"></i> Tablas
-        </a>
+    <div>
+        <div class="btn-group">
+            <button class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                <i class="fas fa-filter me-1"></i> Ordenar
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark">
+                <li><a class="dropdown-item sort-option" data-sort="nombre-asc">Nombre A → Z</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="nombre-desc">Nombre Z → A</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="cargo">Cargo</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="departamento">Departamento</a></li>
+                <li><a class="dropdown-item sort-option" data-sort="estado">Estado</a></li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <div class="btn-group">
+            <button class="btn btn-outline-light view-toggle-btn active" data-view="card">
+                <i class="fas fa-th-large me-1"></i> Tarjetas
+            </button>
+            <button class="btn btn-outline-light view-toggle-btn" data-view="table">
+                <i class="fas fa-table me-1"></i> Tablas
+            </button>
+        </div>
     </div>
 </div>
 
-
-
-<!-- Botón Agregar y registro de datos -->
-<div class="mb-3 d-flex justify-content-between align-items-center">
-    <span class="text-light">
-        {{ funcionarios|length }} registro{% if funcionarios|length != 1 %}s{% endif %}
-    </span>
-    <a href="{% url 'crear_funcionario' %}" class="btn btn-gradient" style="background:#000;color:#fff;">
+<!-- AGREGAR -->
+<div class="mb-3">
+    <a href="{% url 'crear_funcionario' %}" class="btn btn-gradient" style="background: #000; color:#fff;">
         <i class="fas fa-plus me-1"></i> Agregar funcionario
     </a>
 </div>
 
-{% if view_mode == 'cards' %}
-<!-- Tarjetas de funcionarios -->
-<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+<!-- VISTA TARJETAS -->
+<div id="cardView" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
     {% for func in funcionarios %}
-    <div class="col">
+    <div class="col funcionario-item" data-nombre="{{ func.nombre }} {{ func.apellido }}" data-cargo="{{ func.cargo }}"
+        data-departamento="{{ func.departamento }}" data-estado="{{ func.estado }}">
         <div class="card dashboard-card dark animate-fade" data-bs-toggle="modal"
             data-bs-target="#modalFuncionario{{ func.id_funcionario }}">
+            {% if user.is_staff %}
+            <div class="card-actions">
+                <a href="{% url 'editar_funcionario' func.id_funcionario %}" class="btn btn-sm btn-light">
+                    <i class="fas fa-edit text-dark"></i>
+                </a>
+                <button class="btn btn-sm btn-danger"
+                    onclick="event.stopPropagation(); confirmarEliminar('{{ func.id_funcionario }}')">
+                    <i class="fas fa-trash-alt text-white"></i>
+                </button>
+            </div>
+            {% endif %}
             <div class="card-body text-center">
                 {% if func.foto %}
-                <img src="{{ func.foto.url }}" class="rounded-circle mb-3" alt="Foto de {{ func.nombre }}">
+                <img src="{{ func.foto.url }}" class="rounded-circle mb-3">
                 {% else %}
-                <i class="fas fa-user-circle fs-1 text-gradient mb-3"></i>
+                <i class="fas fa-user-circle text-gradient mb-3"></i>
                 {% endif %}
-                <h5 class="text-white">
-                    {{ func.nombre }} {{ func.apellido }}
-                </h5>
+                <h5 class="text-white">{{ func.nombre }} {{ func.apellido }}</h5>
                 <p class="text-secondary mb-1">{{ func.cargo }}</p>
                 <small class="text-muted">{{ func.departamento }}</small><br>
-                <span
-                    class="badge badge-estado {% if func.estado == 'Activo' %}bg-success{% else %}bg-danger{% endif %}">
+                <span class="badge badge-estado
+  {% if func.estado == 'Activo' %}
+    bg-success
+  {% else %}
+    bg-danger
+  {% endif %}">
                     {{ func.estado }}
                 </span>
-            </div>
-        </div>
-    </div>
-    
-    <!-- MODAL -->
-    <div class="modal fade" id="modalFuncionario{{ func.id_funcionario }}" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-dark text-light">
-                <form id="formEditar{{ func.id_funcionario }}" method="post"
-                    action="{% url 'editar_funcionario' func.id_funcionario %}">
-                    {% csrf_token %}
-                    <div class="modal-header">
-                        <h5 class="modal-title">
-                            {{ func.nombre }} {{ func.apellido }}
 
-                        </h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row g-4">
-                            <div class="col-md-4 text-center">
-                                {% if func.foto %}
-                                <img src="{{ func.foto.url }}" class="rounded-circle mb-3" width="110">
-                                {% else %}
-                                <i class="fas fa-user-circle fs-1 text-gradient mb-3" style="font-size: 150px"></i>
-                                {% endif %}
-                            </div>
-                            <div class="col-md-8">
-                                <ul class="list-group list-group-flush">
-                                    <li class="list-group-item bg-dark text-light">
-                                        <strong>Cédula:</strong>
-                                        <span class="field-view">{{ func.cedula }}</span>
-                                        <input type="text" name="cedula" class="form-control field-edit d-none mt-2"
-                                            value="{{ func.cedula }}">
-                                    </li>
-                                    <li class="list-group-item bg-dark text-light">
-                                        <strong>Cargo:</strong>
-                                        <span class="field-view">{{ func.cargo }}</span>
-                                        <input type="text" name="cargo" class="form-control field-edit d-none mt-2"
-                                            value="{{ func.cargo }}">
-                                    </li>
-                                    <li class="list-group-item bg-dark text-light">
-                                        <strong>Fecha de Ingreso:</strong>
-                                        <span class="field-view">{{ func.fecha_ingreso|date:"d/m/Y" }}</span>
-                                        <input type="date" name="fecha_ingreso"
-                                            class="form-control field-edit d-none mt-2"
-                                            value="{{ func.fecha_ingreso|date:'Y-m-d' }}">
-                                    </li>
-                                    <li class="list-group-item bg-dark text-light">
-                                        <strong>Departamento:</strong>
-                                        <span class="field-view">{{ func.departamento }}</span>
-                                        <input type="text" name="departamento"
-                                            class="form-control field-edit d-none mt-2" value="{{ func.departamento }}">
-                                    </li>
-                                    <li class="list-group-item bg-dark text-light">
-                                        <strong>Estado:</strong>
-                                        <span class="field-view">{{ func.estado }}</span>
-                                        <select name="estado" class="form-control field-edit d-none mt-2">
-                                            <option value="Activo" {% if func.estado == "Activo" %}selected{% endif %}>Activo</option>
-                                            <option value="Inactivo" {% if func.estado == "Inactivo" %}selected{% endif %}>Inactivo</option>
-                                        </select>
-                                    </li>
-                                    <li class="list-group-item bg-dark text-light">
-                                        <strong>Estado Civil:</strong>
-                                        <span class="field-view">{{ func.estado_civil }}</span>
-                                        <input type="text" name="estado_civil"
-                                            class="form-control field-edit d-none mt-2" value="{{ func.estado_civil }}">
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer bg-dark d-flex justify-content-between">
-                        <div>
-                            <button type="button" class="btn btn-warning"
-                                onclick="toggleEdit({{ func.id_funcionario }})" id="btnEditar{{ func.id_funcionario }}">
-                                <i class="fas fa-edit"></i> Editar
-                            </button>
-                            <button type="submit" class="btn btn-success d-none"
-                                id="btnGuardar{{ func.id_funcionario }}">
-                                <i class="fas fa-save"></i> Guardar
-                            </button>
-                            <button type="button" class="btn btn-danger"
-                                onclick="confirmarEliminar('{{ func.id_funcionario }}')">
-                                <i class="fas fa-trash-alt"></i> Eliminar
-                            </button>
-                        </div>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<!-- MODAL CONFIRMAR ELIMINACIÓN -->
+<!-- VISTA TABLA -->
+<div id="tableView" class="table-view mt-4" style="display:none;">
+    <div class="table-responsive">
+        <table class="table table-hover table-dark mb-0">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Cédula</th>
+                    <th>Cargo</th>
+                    <th>Departamento</th>
+                    <th>Estado</th>
+                    {% if user.is_staff %}<th>Acciones</th>{% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for f in funcionarios %}
+                <tr class="funcionario-item" data-nombre="{{ f.nombre }} {{ f.apellido }}" data-cargo="{{ f.cargo }}"
+                    data-departamento="{{ f.departamento }}" data-estado="{{ f.estado }}" data-bs-toggle="modal"
+                    data-bs-target="#modalFuncionario{{ f.id_funcionario }}" style="cursor:pointer;">
+                    <td>{{ f.nombre }} {{ f.apellido }}</td>
+                    <td>{{ f.cedula }}</td>
+                    <td>{{ f.cargo }}</td>
+                    <td>{{ f.departamento }}</td>
+                    <td>
+                        <span class="badge badge-estado
+    {% if f.estado == 'Activo' %}
+      bg-success
+    {% else %}
+      bg-danger
+    {% endif %}">
+                            {{ f.estado }}
+                        </span>
+                    </td>
+                    {% if user.is_staff %}
+                    <td>
+                        <a href="{% url 'editar_funcionario' f.id_funcionario %}" class="btn btn-sm btn-light me-1">
+                            <i class="fas fa-edit text-dark"></i>
+                        </a>
+                        <button class="btn btn-sm btn-danger"
+                            onclick="event.stopPropagation(); confirmarEliminar('{{ f.id_funcionario }}')">
+                            <i class="fas fa-trash-alt text-white"></i>
+                        </button>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal Confirmar Eliminación -->
 <div class="modal fade" id="confirmarEliminarModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content bg-dark text-light">
@@ -307,63 +264,56 @@
     </div>
 </div>
 
-{% else %}
-<!-- Vista Tabla -->
-<div class="table-responsive">
-    <table class="table table-hover table-dark mb-0">
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Cédula</th>
-                <th>Cargo</th>
-                <th>Departamento</th>
-                <th>Estado</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for f in funcionarios %}
-            <tr>
-                <td>{{ f.nombre }} {{ f.apellido  }}</td>
-                <td>{{ f.cedula }}</td>
-                <td>{{ f.cargo }}</td>
-                <td>{{ f.departamento }}</td>
-                <td>
-                    <span
-                        class="badge badge-estado {% if f.estado == 'Activo' %}bg-success{% else %}bg-danger{% endif %}">
-                        {{ f.get_estado_display }}
-                    </span>
-                </td>
-                <td>
-                    <a href="{% url 'editar_funcionario' f.id_funcionario %}" class="btn btn-sm btn-light me-1"><i
-                            class="fas fa-edit text-dark"></i></a>
-                    <button class="btn btn-sm btn-danger" onclick="confirmarEliminar('{{ f.id_funcionario }}')"><i
-                            class="fas fa-trash-alt text-white"></i></button>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endif %}
-
 <script>
-    function toggleEdit(id) {
-        let fields = document.querySelectorAll(`#modalFuncionario${id} .field-view`);
-        let inputs = document.querySelectorAll(`#modalFuncionario${id} .field-edit`);
-        let btnEditar = document.getElementById(`btnEditar${id}`);
-        let btnGuardar = document.getElementById(`btnGuardar${id}`);
+    document.addEventListener('DOMContentLoaded', () => {
+        const cardView = document.getElementById('cardView'),
+            tableView = document.getElementById('tableView'),
+            toggleBtns = document.querySelectorAll('.view-toggle-btn'),
+            searchInput = document.getElementById('searchInput'),
+            items = document.querySelectorAll('.funcionario-item'),
+            sortOpts = document.querySelectorAll('.sort-option');
 
-        fields.forEach(el => el.classList.add('d-none'));
-        inputs.forEach(el => el.classList.remove('d-none'));
-        btnEditar.classList.add('d-none');
-        btnGuardar.classList.remove('d-none');
-    }
+        // Cambiar vista
+        toggleBtns.forEach(btn => btn.addEventListener('click', () => {
+            toggleBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (btn.dataset.view === 'card') {
+                cardView.style.display = 'flex'; tableView.style.display = 'none';
+            } else {
+                cardView.style.display = 'none'; tableView.style.display = 'block';
+            }
+        }));
 
-    function confirmarEliminar(id) {
-        const btn = document.getElementById('confirmarEliminarBtn');
-        btn.href = `{% url 'eliminar_funcionario' 0 %}`.replace('0', id);
-        new bootstrap.Modal(document.getElementById('confirmarEliminarModal')).show();
-    }
+        // Búsqueda
+        searchInput.addEventListener('input', () => {
+            const term = searchInput.value.toLowerCase();
+            items.forEach(i => {
+                const name = i.dataset.nombre.toLowerCase(),
+                    cargo = i.dataset.cargo.toLowerCase();
+                i.style.display = (name.includes(term) || cargo.includes(term)) ? '' : 'none';
+            });
+        });
+
+        // Ordenado
+        sortOpts.forEach(opt => opt.addEventListener('click', () => {
+            const [field, dir = 'asc'] = opt.dataset.sort.split('-');
+            const sorted = [...items].sort((a, b) => {
+                let va = a.dataset[field], vb = b.dataset[field];
+                if (va < vb) return dir === 'asc' ? -1 : 1;
+                if (va > vb) return dir === 'asc' ? 1 : -1;
+                return 0;
+            });
+            const parent = (cardView.style.display !== 'none' ? cardView : tableView.querySelector('tbody'));
+            sorted.forEach(el => parent.appendChild(el));
+        }));
+
+        // Confirmar eliminar
+        window.confirmarEliminar = id => {
+            const modal = new bootstrap.Modal(document.getElementById('confirmarEliminarModal')),
+                btn = document.getElementById('confirmarEliminarBtn');
+            btn.href = `{% url 'eliminar_funcionario' 0 %}`.replace('0', id);
+            modal.show();
+        };
+    });
 </script>
 {% endblock %}
