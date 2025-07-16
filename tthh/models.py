@@ -2,12 +2,7 @@ from django.db import models
 from django.core.validators import FileExtensionValidator
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib.auth.models import User
-<<<<<<< HEAD
  
-=======
-from django.core.validators import FileExtensionValidator
-
->>>>>>> branch-RossNuevo
 class PerfilFuncionario(models.Model):
     id_funcionario = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=80)
@@ -51,9 +46,7 @@ class EventoLaboral(models.Model):
     motivo = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-<<<<<<< HEAD
     url_resolucion_evento = models.CharField(max_length=500)
-=======
     url_resolucion_evento = models.FileField(
         upload_to='resoluciones/',
         validators=[FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])],
@@ -61,7 +54,6 @@ class EventoLaboral(models.Model):
         null=True 
     )
     
->>>>>>> branch-RossNuevo
 
 class Evaluacion(models.Model):
     id_evaluacion = models.AutoField(primary_key=True)
@@ -77,16 +69,13 @@ class BeneficioFuncionario(models.Model):
     description = models.TextField()
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
-<<<<<<< HEAD
     url_archivo = models.CharField(max_length=500)
-=======
     url_resolucion_beneficios = models.FileField(
         upload_to='beneficios/',
         validators=[FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])],
         blank=True,
         null=True
     )
->>>>>>> branch-RossNuevo
     
 class PerfilUsuario(models.Model):
     id_perfil = models.AutoField(primary_key=True)

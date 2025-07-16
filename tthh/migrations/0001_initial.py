@@ -68,17 +68,13 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('fecha_inicio', models.DateField()),
                 ('fecha_fin', models.DateField()),
-<<<<<<< HEAD
                 ('url_archivo', models.CharField(max_length=500)),
-                ('id_funcionario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tthh.perfilfuncionario')),
-=======
                 ('url_resolucion_beneficios', models.FileField(
                     blank=True,
                     null=True,
                     upload_to='beneficios/',
                     validators=[django.core.validators.FileExtensionValidator(['pdf', 'jpg', 'jpeg', 'png', 'doc', 'docx'])]
              )),('id_funcionario', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='tthh.perfilfuncionario')),
->>>>>>> branch-RossNuevo
             ],
         ),
         migrations.CreateModel(

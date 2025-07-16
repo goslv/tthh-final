@@ -11,11 +11,8 @@ from django.core.exceptions import PermissionDenied
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
-<<<<<<< HEAD
-=======
 from .models import PerfilFuncionario
 
->>>>>>> branch-RossNuevo
 
 def test_template(request):
     return render(request, 'auth/login.html')  # prueba directa
@@ -116,7 +113,6 @@ def lista_documentos(request):
     documentos = DocumentoFuncionario.objects.select_related('id_funcionario', 'id_tipo_documento').all()
     return render(request, 'documentos/lista_documentos.html', {'documentos': documentos})
 
-<<<<<<< HEAD
 def crear_documento(request):
     if request.method == 'POST':
         form = DocumentoFuncionarioForm(request.POST, request.FILES)
@@ -127,7 +123,6 @@ def crear_documento(request):
         else:
             form = DocumentoFuncionarioForm()
         return render(request, 'documentos/crear_documento.html', {'form': form})
-=======
 from django.shortcuts import render
 from django.contrib import messages
 from .forms import DocumentoFuncionarioForm
@@ -182,9 +177,6 @@ def lista_documentos(request):
         'tipos_documento': tipos_documento
     })
 
-
->>>>>>> branch-RossNuevo
-
 def editar_documento(request, id_documento):
     documento = get_object_or_404(DocumentoFuncionario, pk=id_documento)
     if request.method == 'POST':
@@ -202,18 +194,7 @@ def eliminar_documento(request, id_documento):
     documento.delete()
     messages.success(request, "Documento eliminado correctamente.")
     return redirect('lista_documentos_funcionario')
-<<<<<<< HEAD
 # ------------------------ TIPOS DE DOCUMENTO ------------------------
-def lista_tipos_documento(request):
-    tipos_documento = TipoDocumento.objects.all()
-    return render(request, 'documentos/lista_tipos_documento.html', {'tipos_documento': tipos_documento})
-=======
-
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import TipoDocumento
-from .forms import TipoDocumentoForm
 
 def lista_tipos_documento(request):
     filtro = request.GET.get('filtro')
@@ -230,9 +211,6 @@ def lista_tipos_documento(request):
         'filtro': filtro
     })
 
-    
->>>>>>> branch-RossNuevo
-
 def crear_tipo_documento(request):
     if request.method == 'POST':
         form = TipoDocumentoForm(request.POST)
@@ -240,45 +218,22 @@ def crear_tipo_documento(request):
             form.save()
             messages.success(request, "Tipo de documento registrado correctamente.")
             return redirect('lista_tipos_documento')
-<<<<<<< HEAD
-        else:
-            form = TipoDocumentoForm()
-        return render(request, 'documentos/crear_tipo_documento.html', {'form': form})
-    
-def editar_tipo_documento(request, id_tipo_documento):
-    tipo_documento = get_object_or_404(TipoDocumento, pk=id_tipo_documento)
-    if request.method == 'POST':
-        form = TipoDocumentoForm(request.POST, instance=tipo_documento)
-=======
     else:
         form = TipoDocumentoForm()
     return render(request, 'documentos/crear_tipo_documento.html', {'form': form})
 
 def editar_tipo_documento(request, pk):
-    tipo = get_object_or_404(TipoDocumento, pk=pk)
+    tipo_documento = get_object_or_404(TipoDocumento, pk=pk)
     if request.method == 'POST':
-        form = TipoDocumentoForm(request.POST, instance=tipo)
->>>>>>> branch-RossNuevo
+        form = TipoDocumentoForm(request.POST, instance=tipo_documento)
         if form.is_valid():
             form.save()
             messages.success(request, "Tipo de documento actualizado correctamente.")
             return redirect('lista_tipos_documento')
-<<<<<<< HEAD
         else:
             form = TipoDocumentoForm(instance=tipo_documento)
         return render(request, 'documentos/editar_tipo_documento.html', {'form': form})
     
-def eliminar_tipo_documento(request, id_tipo_documento):
-    tipo_documento = get_object_or_404(TipoDocumento, pk=id_tipo_documento)
-    tipo_documento.delete()
-    messages.success(request, "Tipo de documento eliminado correctamente.")
-    return redirect('lista_tipos_documento')
-
-=======
-    else:
-        form = TipoDocumentoForm(instance=tipo)
-    return render(request, 'documentos/crear_tipo_documento.html', {'form': form})
-
 def eliminar_tipo_documento(request, pk):
     tipo = get_object_or_404(TipoDocumento, pk=pk)
     tipo.delete()
@@ -286,7 +241,6 @@ def eliminar_tipo_documento(request, pk):
     return redirect('lista_tipos_documento')
 
 
->>>>>>> branch-RossNuevo
 # ------------------------ EVALUACIONES ------------------------
 
 def lista_evaluaciones(request):
@@ -330,28 +284,20 @@ def lista_beneficios(request):
 
 def crear_beneficio(request):
     if request.method == 'POST':
-<<<<<<< HEAD
         form = BeneficioFuncionarioForm(request.POST)
-=======
         form = BeneficioFuncionarioForm(request.POST, request.FILES)
->>>>>>> branch-RossNuevo
         if form.is_valid():
             form.save()
             messages.success(request, "Beneficio registrado correctamente.")
             return redirect('lista_beneficios')
-<<<<<<< HEAD
         else:
             form = BeneficioFuncionarioForm()
         return render(request, 'beneficios/crear_beneficio.html', {'form': form})
-=======
     else:
         form = BeneficioFuncionarioForm()
 
     funcionarios = PerfilFuncionario.objects.all()
     return render(request, 'beneficios/crear_beneficio.html', {'form': form, 'funcionarios': funcionarios})
-
-
->>>>>>> branch-RossNuevo
     
 def editar_beneficio(request, id_beneficio):
     beneficio = get_object_or_404(BeneficioFuncionario, pk=id_beneficio)
@@ -372,7 +318,6 @@ def eliminar_beneficio(request, id_beneficio):
     return redirect('lista_beneficios')
 
 # ------------------------ EVENTOS FUNCIONARIOS ------------------------
-<<<<<<< HEAD
 
 def lista_eventos_funcionario(request):
     eventos = EventoLaboral.objects.select_related('id_funcionario').all()
@@ -388,7 +333,7 @@ def registrar_evento_funcionario(request):
         else:
             form = EventoLaboralForm()
     return render(request, 'eventos/crear_evento.html', {'form': form})
-=======
+
 def lista_eventos(request):
     eventos = EventoLaboral.objects.select_related('id_funcionario').all()
     return render(request, 'eventos/lista_eventos_funcionario.html', {'eventos': eventos})
@@ -406,9 +351,6 @@ def crear_evento(request):
     funcionarios = PerfilFuncionario.objects.all()
     return render(request, 'eventos/crear_evento.html', {'form': form, 'funcionarios': funcionarios})
 
-
->>>>>>> branch-RossNuevo
-
 def editar_evento(request, id_evento):
     evento = get_object_or_404(EventoLaboral, pk=id_evento)
     if request.method == 'POST':
@@ -417,35 +359,28 @@ def editar_evento(request, id_evento):
             form.save()
             messages.success(request, "Evento actualizado correctamente.")
             return redirect('lista_eventos_funcionario')
-<<<<<<< HEAD
         else:
             form = EventoLaboralForm(instance=evento)
         return render(request, 'eventos/editar_evento.html', {'form': form})
-=======
     else:
         form = EventoLaboralForm(instance=evento)
     
     funcionarios = PerfilFuncionario.objects.all()
     return render(request, 'eventos/editar_evento.html', {'form': form, 'funcionarios': funcionarios})
 
->>>>>>> branch-RossNuevo
-    
 def eliminar_evento(request, id_evento):
     evento = get_object_or_404(EventoLaboral, pk=id_evento)
     evento.delete()
     messages.success(request, "Evento eliminado correctamente.")
-<<<<<<< HEAD
     return redirect('lista_eventos_funcionario')
-=======
     return redirect('lista_eventos')
 
 
->>>>>>> branch-RossNuevo
 
 #-------------------------- USUARIOS --------------------------
 
 def lista_usuarios(request):
-    usuarios = Usuario.objects.all()
+    usuarios = PerfilUsuario.objects.all()
     return render(request, 'usuarios/lista_usuarios.html', {'usuarios': usuarios})
 
 def crear_usuario(request):
@@ -455,10 +390,10 @@ def crear_usuario(request):
         password_hash = make_password(password_claro)
         rol = request.POST['rol']
 
-        if Usuario.objects.filter(username=username).exists():
+        if PerfilUsuario.objects.filter(username=username).exists():
             messages.error(request, "El nombre de usuario ya está en uso.")
         else:
-            usuario = Usuario.objects.create(username=username, password=password_hash, rol=rol)
+            usuario = PerfilUsuario.objects.create(username=username, password=password_hash, rol=rol)
             messages.success(request, "Usuario registrado correctamente.")
             return redirect('lista_usuarios')
     else:
@@ -466,7 +401,7 @@ def crear_usuario(request):
     return render(request, 'usuarios/crear_usuario.html', {'form': form})
 
 def editar_usuario(request, id_usuario):
-    usuario = get_object_or_404(User, pk=id_usuario)
+    usuario = get_object_or_404(PerfilUsuario, pk=id_usuario)
     if request.method == 'POST':
         form = UsuarioForm(request.POST, instance=usuario)
         if form.is_valid():
@@ -478,39 +413,17 @@ def editar_usuario(request, id_usuario):
         return render(request, 'tasks/editar_usuario.html', {'form': form})
     
 def eliminar_usuario(request, id_usuario):
-    usuario = get_object_or_404(Usuario, pk=id_usuario)
+    usuario = get_object_or_404(PerfilUsuario, pk=id_usuario)
     usuario.delete()
     messages.success(request, "Usuario eliminado correctamente.")
     return redirect('lista_usuarios')
 
 # ------------------------ PERMISOS ------------------------
+
 def is_admin(user):
     return user.rol == 'admin'
 def is_user(user):
     return user.rol == 'user'
-<<<<<<< HEAD
-=======
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import DocumentoFuncionarioForm
-
-def crear_documento(request):
-    if request.method == 'POST':
-        form = DocumentoFuncionarioForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Documento registrado correctamente.")
-            return redirect('lista_documentos_funcionario')
-    else:
-        form = DocumentoFuncionarioForm()
-    
-    return render(request, 'documentos/crear_documento.html', {'form': form})
-
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .forms import DocumentoFuncionarioForm
-from .models import PerfilFuncionario, DocumentoFuncionario
 
 def crear_documento(request):
     if request.method == 'POST':
@@ -533,4 +446,3 @@ def crear_documento(request):
 
     return render(request, 'documentos/crear_documento.html', {'form': form})
 
->>>>>>> branch-RossNuevo

@@ -17,19 +17,12 @@ class PerfilFuncionarioForm(forms.ModelForm):
             'estado': forms.Select(attrs={'class': 'form-control'}),
             'estado_civil': forms.Select(attrs={'class': 'form-control'}),
         }
-
-<<<<<<< HEAD
-=======
-from django import forms
-from .models import TipoDocumento
-
->>>>>>> branch-RossNuevo
+        
 class TipoDocumentoForm(forms.ModelForm):
     class Meta:
         model = TipoDocumento
         fields = ['nombre', 'description', 'obligatorio']
         widgets = {
-<<<<<<< HEAD
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'obligatorio': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -41,15 +34,10 @@ class DocumentoFuncionarioForm(forms.ModelForm):
         fields = ['id_funcionario', 'id_tipo_documento', 'fecha_presentacion', 'archivo', 'estado']
         widgets = {
             'id_funcionario': forms.Select(attrs={'class': 'form-control'}),
-=======
             'nombre': forms.TextInput(attrs={'class': 'form-control bg-dark text-white'}),
             'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-white', 'rows': 3}),
             'obligatorio': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
-
-
-from django import forms
-from .models import DocumentoFuncionario, PerfilFuncionario
 
 class DocumentoFuncionarioForm(forms.ModelForm):
     cedula = forms.CharField(label="Cédula del Funcionario", max_length=45, widget=forms.TextInput(attrs={'class': 'form-control'}))
@@ -58,7 +46,6 @@ class DocumentoFuncionarioForm(forms.ModelForm):
         model = DocumentoFuncionario
         fields = ['cedula', 'id_tipo_documento', 'fecha_presentacion', 'archivo', 'estado']
         widgets = {
->>>>>>> branch-RossNuevo
             'id_tipo_documento': forms.Select(attrs={'class': 'form-control'}),
             'fecha_presentacion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'archivo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
@@ -75,11 +62,8 @@ class EventoLaboralForm(forms.ModelForm):
             'motivo': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-<<<<<<< HEAD
             'url_resolucion_evento': forms.TextInput(attrs={'class': 'form-control'}),
-=======
             'url_resolucion_evento': forms.ClearableFileInput(attrs={'class': 'form-control'}),
->>>>>>> branch-RossNuevo
         }
 
 class EvaluacionForm(forms.ModelForm):
@@ -96,24 +80,17 @@ class EvaluacionForm(forms.ModelForm):
 class BeneficioFuncionarioForm(forms.ModelForm):
     class Meta:
         model = BeneficioFuncionario
-<<<<<<< HEAD
         fields = ['id_funcionario', 'tipo_beneficio', 'description', 'fecha_inicio', 'fecha_fin', 'url_archivo']
-=======
         fields = [
             'id_funcionario','tipo_beneficio','description','fecha_inicio','fecha_fin','url_resolucion_beneficios'  
         ]
->>>>>>> branch-RossNuevo
         widgets = {
             'id_funcionario': forms.Select(attrs={'class': 'form-control'}),
             'tipo_beneficio': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'fecha_fin': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-<<<<<<< HEAD
-            'url_archivo': forms.TextInput(attrs={'class': 'form-control'}),
-=======
             'url_resolucion_beneficios': forms.ClearableFileInput(attrs={'class': 'form-control'}),
->>>>>>> branch-RossNuevo
         }
 
 class UsuarioForm(forms.Form):

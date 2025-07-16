@@ -1,17 +1,4 @@
 {% extends "base.html" %}
-<<<<<<< HEAD
-{% block content %}
-<div class="container mt-4">
-    <h2>Nuevo Documento para Funcionario</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Guardar</button>
-    </form>
-</div>
-{% endblock %}
-
-=======
 {% load static %}
 {% block content %}
 
@@ -131,4 +118,3 @@
 {% endif %}
 
 {% endblock %}
->>>>>>> branch-RossNuevo
